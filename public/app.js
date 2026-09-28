@@ -41,6 +41,33 @@ const PROJECTS = [
   { title: "Speech-to-text", tech: "HTML", url: "https://github.com/Veanyxz/Speech-to-text",
     desc: "Konversi suara ke teks langsung dari browser.",
     tags: ["speech", "stt", "web"] },
+  { title: "AccSpotify", tech: "PHP", url: "https://github.com/Veanyxz/AccSpotify",
+    desc: "Checker akun Spotify berbasis web.",
+    tags: ["spotify", "checker", "web"] },
+  { title: "cekrek-web", tech: "HTML", url: "https://github.com/Veanyxz/cekrek-web",
+    desc: "Tool cek rekening / akun berbasis web.",
+    tags: ["checker", "web", "tool"] },
+  { title: "shopbeta", tech: "JavaScript", url: "https://github.com/Veanyxz/shopbeta",
+    desc: "Prototype web app toko / e-commerce sederhana.",
+    tags: ["ecommerce", "web", "shop"] },
+  { title: "among-us-online", tech: "JavaScript", url: "https://github.com/Veanyxz/among-us-online",
+    desc: "Game Among Us versi online di browser.",
+    tags: ["game", "among-us", "web"] },
+  { title: "hangman", tech: "HTML", url: "https://github.com/Veanyxz/hangman",
+    desc: "Game tebak kata hangman klasik.",
+    tags: ["game", "hangman", "web"] },
+  { title: "dinorun", tech: "JavaScript", url: "https://github.com/Veanyxz/dinorun",
+    desc: "Clone game Dino Run (offline chrome).",
+    tags: ["game", "dino", "web"] },
+  { title: "Flappybird-JS", tech: "JavaScript", url: "https://github.com/Veanyxz/Flappybird-JS",
+    desc: "Clone Flappy Bird pakai JavaScript murni.",
+    tags: ["game", "flappybird", "web"] },
+  { title: "pacman", tech: "JavaScript", url: "https://github.com/Veanyxz/pacman",
+    desc: "Clone Pac-Man klasik di browser.",
+    tags: ["game", "pacman", "web"] },
+  { title: "calculator", tech: "CSS", url: "https://github.com/Veanyxz/calculator",
+    desc: "Kalkulator sederhana dengan UI rapi.",
+    tags: ["calculator", "web", "tool"] },
 ];
 
 const STACK = [
@@ -138,6 +165,18 @@ function cursorGlow() {
   });
 }
 
+function scrollProgress() {
+  const bar = $("#scroll-progress");
+  if (!bar) return;
+  const update = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+}
+
 /* ============================================================
    Nav
    ============================================================ */
@@ -184,6 +223,9 @@ function makeObserver() {
       if (!e.isIntersecting) return;
       const el = e.target;
       el.classList.add("visible");
+      if (el.style.transitionDelay) {
+        setTimeout(() => { el.style.transitionDelay = ""; }, 1100);
+      }
       const num = el.querySelector("[data-count]");
       if (num) countUp(num);
       revealObserver.unobserve(el);
@@ -222,6 +264,7 @@ function renderShowcase() {
     PROJECTS.slice(0, shown).forEach((p, i) => {
       const card = document.createElement("article");
       card.className = "card reveal";
+      card.style.transitionDelay = (i % 3) * 90 + "ms";
       card.innerHTML = `
         <div class="card-preview">
           <div class="preview-bar">
@@ -245,11 +288,17 @@ function renderShowcase() {
         </div>`;
       grid.appendChild(card);
     });
-    moreBtn.hidden = shown >= PROJECTS.length;
+    const remaining = PROJECTS.length - shown;
+    if (remaining > 0) {
+      moreBtn.hidden = false;
+      moreBtn.textContent = "Load Additional Projects (" + remaining + " more)";
+    } else {
+      moreBtn.hidden = true;
+    }
     observeReveals();
   };
 
-  moreBtn.addEventListener("click", () => { shown = PROJECTS.length; render(); });
+  moreBtn.addEventListener("click", () => { shown = Math.min(shown + 6, PROJECTS.length); render(); });
   render();
 }
 
@@ -259,8 +308,8 @@ function renderShowcase() {
 function renderStack() {
   const grid = $("#stack-grid");
   if (!grid) return;
-  grid.innerHTML = STACK.map((s) => `
-    <div class="stack-card reveal">
+  grid.innerHTML = STACK.map((s, i) => `
+    <div class="stack-card reveal" style="transition-delay: ${i * 90}ms">
       <h3>${s.name}</h3>
       <ul>${s.items.map((it) => `<li>${it}</li>`).join("")}</ul>
     </div>`).join("");
@@ -323,6 +372,7 @@ function init() {
   renderShowcase();
   renderStack();
   cursorGlow();
+  scrollProgress();
   nav();
   smoothScroll();
   contactForm();
