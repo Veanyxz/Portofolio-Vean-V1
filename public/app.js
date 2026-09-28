@@ -270,15 +270,62 @@ function renderStack() {
 /* ============================================================
    Init
    ============================================================ */
+function smoothScroll() {
+  $$("[data-scroll]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      const href = el.getAttribute("href");
+      if (!href || href.charAt(0) !== "#") return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", href);
+    });
+  });
+}
+
+function contactForm() {
+  const form = $("#compose-form");
+  const note = $("#compose-note");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("#compose-send");
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    note.textContent = "";
+    note.style.color = "";
+    try {
+      const body = new URLSearchParams(new FormData(form)).toString();
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+      if (!res.ok) throw new Error("bad status " + res.status);
+      note.textContent = "> message sent! gue bakal bales secepatnya.";
+      form.reset();
+    } catch (err) {
+      note.style.color = "#ff7b7b";
+      note.textContent = "> gagal kirim, coba lagi atau email langsung ke admin@vean.my.id";
+    }
+    btn.disabled = false;
+    btn.textContent = orig;
+  });
+}
+
 function init() {
   // hide hero behind opaque preloader (avoid flash)
-  $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta").forEach((el) => el.classList.add("hero-anim"));
+  $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta, .hero-photo").forEach((el) => el.classList.add("hero-anim"));
 
   makeObserver();
   renderShowcase();
   renderStack();
   cursorGlow();
   nav();
+  smoothScroll();
+  contactForm();
   runBoot();
 }
 

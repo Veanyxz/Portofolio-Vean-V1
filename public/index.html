@@ -29,9 +29,9 @@
   <nav class="nav" id="nav">
     <a class="nav-logo" href="#overview" data-scroll>
       <svg viewBox="0 0 24 24" fill="none" class="nav-logo-mark" aria-hidden="true">
-        <path d="M4 20V4l8 12 8-12v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 4 L12 20 L21 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>vean<span class="accent">.my.id</span></span>
+      <span class="nav-word">VEAN<span class="nav-cursor">▌</span></span>
     </a>
     <div class="nav-links" id="nav-links">
       <a href="#overview" data-scroll class="nav-link active">Overview</a>
@@ -52,41 +52,53 @@
     <!-- HERO / OVERVIEW -->
     <section class="hero" id="overview">
       <div class="hero-inner">
-        <p class="eyebrow"><span class="mono">&gt;</span> system // online</p>
-        <h1 class="hero-title">
-          <span class="hello">Building resilient systems<br/>&amp; fluid digital products.</span>
-        </h1>
-        <div class="hero-name">
-          <span class="mono dim">— I'm</span>
-          <span class="glitch" data-text="Vean">Vean</span>
-        </div>
-        <p class="hero-role">
-          <span class="mono dim">Primary Role: </span>
-          <span class="type-role" id="type-role"></span><span class="caret">▌</span>
-        </p>
-        <p class="hero-desc">
-          Full-stack developer dari Indonesia. Bikin tools, otomasi, dan sistem yang
-          <em>just works</em> — dari backend yang solid sampai UI yang enak dipandang.
-        </p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="#showcase" data-scroll>Explore Showcase</a>
-          <a class="btn btn-ghost" href="https://github.com/Veanyxz" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
-            GitHub
-          </a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat reveal">
-            <div class="stat-num" data-count="6">0</div>
-            <div class="stat-label">Active Live Apps</div>
+        <div class="hero-grid">
+          <div class="hero-content">
+            <p class="eyebrow"><span class="mono">&gt;</span> system // online</p>
+            <h1 class="hero-title">
+              <span class="hello">Building resilient systems<br/>&amp; fluid digital products.</span>
+            </h1>
+            <div class="hero-name">
+              <span class="mono dim">— I'm</span>
+              <span class="glitch" data-text="Vean">Vean</span>
+            </div>
+            <p class="hero-role">
+              <span class="mono dim">Primary Role: </span>
+              <span class="type-role" id="type-role"></span><span class="caret">▌</span>
+            </p>
+            <p class="hero-desc">
+              Full-stack developer dari Indonesia. Bikin tools, otomasi, dan sistem yang
+              <em>just works</em> — dari backend yang solid sampai UI yang enak dipandang.
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#showcase" data-scroll>Explore Showcase</a>
+              <a class="btn btn-ghost" href="https://github.com/Veanyxz" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+                GitHub
+              </a>
+            </div>
+            <div class="hero-stats">
+              <div class="stat reveal">
+                <div class="stat-num" data-count="6">0</div>
+                <div class="stat-label">Active Live Apps</div>
+              </div>
+              <div class="stat reveal">
+                <div class="stat-num" data-count="31">0</div>
+                <div class="stat-label">All Repos Count</div>
+              </div>
+              <div class="stat reveal">
+                <div class="stat-num" data-count="58">0</div>
+                <div class="stat-label">GitHub Followers</div>
+              </div>
+            </div>
           </div>
-          <div class="stat reveal">
-            <div class="stat-num" data-count="31">0</div>
-            <div class="stat-label">All Repos Count</div>
-          </div>
-          <div class="stat reveal">
-            <div class="stat-num" data-count="58">0</div>
-            <div class="stat-label">GitHub Followers</div>
+
+          <div class="hero-photo">
+            <div class="photo-frame">
+              <div class="photo-ring"></div>
+              <img src="https://avatars.githubusercontent.com/u/50613879?v=4" alt="Vean" width="360" height="360" />
+            </div>
+            <div class="photo-status mono"><span class="dot"></span> available for work</div>
           </div>
         </div>
       </div>
@@ -149,21 +161,48 @@
         <p class="eyebrow center"><span class="mono">&gt;</span> contact</p>
         <h2>Have a project in mind?</h2>
         <p class="section-sub">Let's build something world-class.</p>
-        <p class="contact-note">Terbuka buat kolaborasi full-stack, proyek kustom, atau sekadar diskusi teknis.</p>
-        <div class="contact-cta">
-          <a class="btn btn-primary" href="mailto:veanyxz@gmail.com">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
-            Send Direct Email
-          </a>
-          <a class="btn btn-ghost" href="https://github.com/Veanyxz" target="_blank" rel="noopener">GitHub Profile</a>
-        </div>
+
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="compose" id="compose-form">
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hp" aria-hidden="true"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+          <div class="compose-bar">
+            <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
+            <span class="compose-title mono">compose — admin@vean.my.id</span>
+          </div>
+
+          <div class="compose-body">
+            <div class="compose-row">
+              <label class="mono" for="cf-name">from</label>
+              <input id="cf-name" name="name" type="text" placeholder="Nama kamu" autocomplete="name" required />
+            </div>
+            <div class="compose-row">
+              <label class="mono" for="cf-email">reply-to</label>
+              <input id="cf-email" name="email" type="email" placeholder="email@kamu.com" autocomplete="email" required />
+            </div>
+            <div class="compose-row">
+              <label class="mono" for="cf-subject">subject</label>
+              <input id="cf-subject" name="subject" type="text" placeholder="Judul pesan" />
+            </div>
+            <div class="compose-row grow">
+              <label class="mono" for="cf-message">message</label>
+              <textarea id="cf-message" name="message" placeholder="Tulis pesan kamu di sini..." required></textarea>
+            </div>
+          </div>
+
+          <div class="compose-foot">
+            <span class="mono dim">to: admin@vean.my.id</span>
+            <button type="submit" class="btn btn-primary" id="compose-send">Send</button>
+          </div>
+        </form>
+        <p class="compose-note mono" id="compose-note"></p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="footer-inner">
-      <span>vean.my.id</span>
+      <span class="footer-brand">VEAN<span class="accent">▌</span></span>
       <span class="mono dim">Designed &amp; Engineered by Vean</span>
     </div>
   </footer>
