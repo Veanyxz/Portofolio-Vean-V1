@@ -33,7 +33,7 @@ const PROJECTS = [
 const STACK = [
   { name: "Frontend", items: ["JavaScript", "HTML / CSS", "React / Next.js", "Tailwind"] },
   { name: "Backend", items: ["Node.js", "Express", "PHP", "Python"] },
-  { name: "Infra", items: ["VPS / Linux", "Docker", "Cloudflare", "Netlify"] },
+  { name: "Mobile", items: ["Kotlin", "Android", "Jetpack Compose", "Flutter"] },
   { name: "Security", items: ["OSINT", "Recon", "Pentest", "Reverse Engineering"] },
 ];
 
