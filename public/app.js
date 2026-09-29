@@ -154,14 +154,36 @@ function typeRole() {
 }
 
 /* ============================================================
-   Cursor glow
+   Custom cursor
    ============================================================ */
-function cursorGlow() {
-  const glow = $("#cursor-glow");
-  if (!glow || !window.matchMedia("(hover: hover)").matches) return;
+function customCursor() {
+  const dot = $("#cursor-dot");
+  const ring = $("#cursor-ring");
+  if (!dot || !ring) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  document.body.classList.add("has-cursor");
+  dot.style.opacity = "1";
+  ring.style.opacity = "1";
+
+  let mx = -100, my = -100, rx = -100, ry = -100;
+
   window.addEventListener("mousemove", (e) => {
-    glow.style.left = e.clientX + "px";
-    glow.style.top = e.clientY + "px";
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  });
+
+  const loop = () => {
+    rx += (mx - rx) * 0.16;
+    ry += (my - ry) * 0.16;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  };
+  loop();
+
+  $$("a, button, .card, .compose input, .compose textarea").forEach((el) => {
+    el.addEventListener("mouseenter", () => ring.classList.add("active"));
+    el.addEventListener("mouseleave", () => ring.classList.remove("active"));
   });
 }
 
@@ -386,7 +408,7 @@ function init() {
   makeObserver();
   renderShowcase();
   renderStack();
-  cursorGlow();
+  customCursor();
   scrollProgress();
   magnetic();
   nav();
