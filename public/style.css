@@ -66,18 +66,30 @@ body::after {
 .cursor-dot, .cursor-ring {
   position: fixed; top: 0; left: 0; pointer-events: none;
   border-radius: 50%; transform: translate(-50%, -50%);
-  opacity: 0; z-index: 10000;
+  opacity: 0; z-index: 10000; will-change: transform;
 }
 .cursor-dot {
-  width: 6px; height: 6px; background: var(--accent);
-  box-shadow: 0 0 10px rgba(0,255,156,0.8);
+  width: 5px; height: 5px; background: var(--accent);
+  box-shadow: 0 0 8px rgba(0,255,156,0.9), 0 0 22px rgba(0,255,156,0.4);
 }
 .cursor-ring {
-  width: 34px; height: 34px;
-  border: 1px solid rgba(0,255,156,0.45);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(0,255,156,0.5);
+  transition: width 0.3s var(--ease), height 0.3s var(--ease),
+    border-color 0.3s var(--ease), background 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
 }
-.cursor-ring.active { border-color: rgba(0,255,156,0.9); background: rgba(0,255,156,0.06); }
+.cursor-ring.active {
+  width: 52px; height: 52px;
+  border-color: rgba(0,255,156,0.95);
+  background: rgba(0,255,156,0.06);
+  box-shadow: 0 0 26px rgba(0,255,156,0.18), inset 0 0 14px rgba(0,255,156,0.06);
+}
+.cursor-ring.down {
+  width: 26px; height: 26px;
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,255,156,0.35);
+}
 body.has-cursor, body.has-cursor * { cursor: none; }
 
 .scroll-progress {
@@ -163,9 +175,22 @@ body.has-cursor, body.has-cursor * { cursor: none; }
 .hero-photo { display: flex; flex-direction: column; align-items: center; gap: 20px; }
 .photo-frame { position: relative; width: min(340px, 72vw); height: min(340px, 72vw); cursor: pointer; }
 .photo-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 1px solid var(--border-strong); display: block; position: relative; z-index: 2; }
-.photo-ring { position: absolute; inset: -16px; border-radius: 50%; border: 1px dashed rgba(0,255,156,0.4); animation: spin 24s linear infinite; z-index: 1; }
+.photo-ring {
+  position: absolute; inset: -14px; border-radius: 50%; z-index: 1;
+  background: conic-gradient(var(--accent), #00ffd5, var(--accent-dim), var(--accent));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  animation: ring-spin 8s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(0,255,156,0.35));
+}
+.photo-ring-2 {
+  position: absolute; inset: -24px; border-radius: 50%; z-index: 1;
+  border: 1px dashed rgba(0,255,156,0.28);
+  animation: ring-spin-rev 16s linear infinite;
+}
 .photo-frame::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, rgba(0,255,156,0.20), transparent 60%); filter: blur(16px); z-index: 1; }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes ring-spin { to { transform: rotate(360deg); } }
+@keyframes ring-spin-rev { to { transform: rotate(-360deg); } }
 .eyebrow { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.08em; margin-bottom: 22px; }
 .eyebrow .mono { color: var(--accent); }
 .hero-title { font-family: var(--font-head); font-weight: 600; font-size: clamp(32px, 5.5vw, 60px); line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }

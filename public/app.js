@@ -126,24 +126,33 @@ function customCursor() {
   dot.style.opacity = "1";
   ring.style.opacity = "1";
 
-  let mx = -100, my = -100, rx = -100, ry = -100;
+  let mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0;
 
   window.addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
     dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
   });
 
-  const loop = () => {
-    rx += (mx - rx) * 0.16;
-    ry += (my - ry) * 0.16;
+  // spring-physics trailing ring (smoother than linear lerp)
+  (function loop() {
+    vx += (mx - rx) * 0.16;
+    vy += (my - ry) * 0.16;
+    vx *= 0.78;
+    vy *= 0.78;
+    rx += vx;
+    ry += vy;
     ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
     requestAnimationFrame(loop);
-  };
-  loop();
+  })();
 
-  $$("a, button, .card, .compose input, .compose textarea").forEach((el) => {
-    el.addEventListener("mouseenter", () => ring.classList.add("active"));
-    el.addEventListener("mouseleave", () => ring.classList.remove("active"));
+  // click pulse
+  window.addEventListener("mousedown", () => ring.classList.add("down"));
+  window.addEventListener("mouseup", () => ring.classList.remove("down"));
+
+  // hover grow — delegated, works for dynamic (modal) elements too
+  const hoverables = "a, button, .card, .btn, .compose input, .compose textarea, [data-modal-close]";
+  document.addEventListener("mouseover", (e) => {
+    ring.classList.toggle("active", !!e.target.closest(hoverables));
   });
 }
 
