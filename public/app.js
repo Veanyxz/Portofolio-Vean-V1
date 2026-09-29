@@ -12,62 +12,22 @@ const ROLES = [
   "System Builder",
 ];
 
-// Deskripsi seed — refine sesuai project asli kalian.
+// Proyek showcase — hasil kerjaan asli, bukan repo GitHub.
+// Tambah proyek baru: copy satu blok { } di bawah, isi title/url/domain/shot/tech/desc/tags.
+// `shot` = path screenshot di public/shots/ (jpg 1280x720).
 const PROJECTS = [
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
-    desc: "A file-sharing service for every file type — persistent media hosting and direct uploads. Drag-and-drop with a polished dark interface.",
-    tags: ["uploader", "file-hosting", "web-tool"] },
-  { title: "Scraper", tech: "JavaScript", url: "https://github.com/Veanyxz/Scraper",
-    desc: "A versatile web scraper for extracting data from sites without an API.",
-    tags: ["scraper", "automation", "node"] },
-  { title: "json", tech: "JavaScript", url: "https://github.com/Veanyxz/json",
-    desc: "A lightweight JSON helper and endpoint for handling structured data.",
-    tags: ["json", "api", "tooling"] },
-  { title: "shortlink", tech: "JavaScript", url: "https://github.com/Veanyxz/shortlink",
-    desc: "A minimal URL shortener — turn long links into clean, shareable ones.",
-    tags: ["url-shortener", "web"] },
-  { title: "animestream", tech: "JavaScript", url: "https://github.com/Veanyxz/animestream",
-    desc: "An anime streaming platform with a modern interface and minimal ads.",
-    tags: ["anime", "streaming", "web"] },
-  { title: "filezone", tech: "EJS", url: "https://github.com/Veanyxz/filezone",
-    desc: "A simple file-hosting service — upload and share files straight from the browser.",
-    tags: ["file-hosting", "node"] },
-  { title: "ytdl-downloader", tech: "HTML", url: "https://github.com/Veanyxz/ytdl-downloader",
-    desc: "A web-based YouTube video downloader.",
-    tags: ["youtube", "downloader", "web"] },
-  { title: "my-weather-app", tech: "JavaScript", url: "https://github.com/Veanyxz/my-weather-app",
-    desc: "A weather application with real-time data.",
-    tags: ["weather", "api", "web"] },
-  { title: "Speech-to-text", tech: "HTML", url: "https://github.com/Veanyxz/Speech-to-text",
-    desc: "Browser-based speech-to-text conversion.",
-    tags: ["speech", "stt", "web"] },
-  { title: "AccSpotify", tech: "PHP", url: "https://github.com/Veanyxz/AccSpotify",
-    desc: "A web-based tool for checking Spotify account status.",
-    tags: ["spotify", "checker", "web"] },
-  { title: "cekrek-web", tech: "HTML", url: "https://github.com/Veanyxz/cekrek-web",
-    desc: "A web-based tool for validating account and rekening data.",
-    tags: ["checker", "web", "tool"] },
-  { title: "shopbeta", tech: "JavaScript", url: "https://github.com/Veanyxz/shopbeta",
-    desc: "A simple e-commerce web app prototype.",
-    tags: ["ecommerce", "web", "shop"] },
-  { title: "among-us-online", tech: "JavaScript", url: "https://github.com/Veanyxz/among-us-online",
-    desc: "An online, browser-based Among Us game.",
-    tags: ["game", "among-us", "web"] },
-  { title: "hangman", tech: "HTML", url: "https://github.com/Veanyxz/hangman",
-    desc: "A classic word-guessing game.",
-    tags: ["game", "hangman", "web"] },
-  { title: "dinorun", tech: "JavaScript", url: "https://github.com/Veanyxz/dinorun",
-    desc: "A clone of the Chrome offline Dino Run game.",
-    tags: ["game", "dino", "web"] },
-  { title: "Flappybird-JS", tech: "JavaScript", url: "https://github.com/Veanyxz/Flappybird-JS",
-    desc: "A pure-JavaScript Flappy Bird clone.",
-    tags: ["game", "flappybird", "web"] },
-  { title: "pacman", tech: "JavaScript", url: "https://github.com/Veanyxz/pacman",
-    desc: "A classic Pac-Man clone for the browser.",
-    tags: ["game", "pacman", "web"] },
-  { title: "calculator", tech: "CSS", url: "https://github.com/Veanyxz/calculator",
-    desc: "A clean, simple calculator.",
-    tags: ["calculator", "web", "tool"] },
+    domain: "uploader.vean.my.id", shot: "shots/uploader.jpg",
+    desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly — media stored permanently, everything else on high-speed direct upload.",
+    tags: ["file-sharing", "drag & drop", "web tool"] },
+  { title: "Vean Shortlink", tech: "JavaScript", url: "https://short.vean.my.id",
+    domain: "short.vean.my.id", shot: "shots/shortlink.jpg",
+    desc: "A privacy-first URL shortener. Create clean, brandable links with a custom or random slug, permanent or temporary expiry, and no tracking or sign-up.",
+    tags: ["url shortener", "privacy", "web tool"] },
+  { title: "Audio Tune", tech: "JavaScript · Web Audio", url: "https://audio.vean.my.id",
+    domain: "audio.vean.my.id", shot: "shots/audio.jpg",
+    desc: "A fully browser-based audio editor — trim, tune speed and pitch, apply effects, and import from YouTube, then export files ready to upload. No install, no server.",
+    tags: ["audio editor", "web audio api", "creator tool"] },
 ];
 
 const STACK = [
@@ -306,9 +266,9 @@ function renderShowcase() {
         <div class="card-preview">
           <div class="preview-bar">
             <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
-            <span class="preview-url mono">${p.url.replace(/^https?:\/\//, "")}</span>
+            <span class="preview-url mono">${p.domain}</span>
           </div>
-          <div class="preview-title mono">$ ./${p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}</div>
+          <div class="preview-shot"><img src="${p.shot}" alt="${p.title} preview" loading="lazy" /></div>
         </div>
         <div class="card-body">
           <div class="card-top">

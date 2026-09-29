@@ -282,14 +282,14 @@ body.has-cursor, body.has-cursor * { cursor: none; }
 .pdot.y { background: #ffbd2e; }
 .pdot.g { background: #27c93f; }
 .preview-url { margin-left: 8px; font-size: 11px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.preview-title {
-  flex: 1; display: flex; align-items: center;
-  padding: 0 16px;
-  font-family: var(--font-mono); font-size: 15px;
-  color: var(--accent); text-shadow: 0 0 18px rgba(0,255,156,0.25);
-  transition: transform 0.35s var(--ease);
+.preview-shot {
+  flex: 1; overflow: hidden; position: relative; background: #000;
 }
-.card:hover .preview-title { transform: translateX(6px); }
+.preview-shot img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top;
+  display: block; transition: transform 0.5s var(--ease);
+}
+.card:hover .preview-shot img { transform: scale(1.04); }
 .card-body { padding: 22px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
 .card-top { display: flex; align-items: center; justify-content: space-between; }
 .card-tech { font-family: var(--font-mono); font-size: 11px; color: var(--accent); background: var(--accent-glow); padding: 4px 10px; border-radius: 6px; }
