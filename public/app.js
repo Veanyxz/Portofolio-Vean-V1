@@ -402,7 +402,6 @@ function openProjectModal(p) {
         <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
         <div class="modal-actions">
           <a class="btn btn-primary" href="${p.url}" target="_blank" rel="noopener">Visit Project ↗</a>
-          <button class="btn btn-ghost" data-modal-close>Close</button>
         </div>
       </div>
     </div>`);
