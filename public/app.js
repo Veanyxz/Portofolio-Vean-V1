@@ -15,58 +15,58 @@ const ROLES = [
 // Deskripsi seed — refine sesuai project asli kalian.
 const PROJECTS = [
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
-    desc: "Upload file semua tipe — media permanen, non-media via gofile. Drag & drop, dark UI.",
+    desc: "A file-sharing service for every file type — persistent media hosting and direct uploads. Drag-and-drop with a polished dark interface.",
     tags: ["uploader", "file-hosting", "web-tool"] },
   { title: "Scraper", tech: "JavaScript", url: "https://github.com/Veanyxz/Scraper",
-    desc: "Scraper web serbaguna buat ambil data dari situs tanpa API.",
+    desc: "A versatile web scraper for extracting data from sites without an API.",
     tags: ["scraper", "automation", "node"] },
   { title: "json", tech: "JavaScript", url: "https://github.com/Veanyxz/json",
-    desc: "Helper / endpoint JSON buat nge-handle data terstruktur.",
+    desc: "A lightweight JSON helper and endpoint for handling structured data.",
     tags: ["json", "api", "tooling"] },
   { title: "shortlink", tech: "JavaScript", url: "https://github.com/Veanyxz/shortlink",
-    desc: "URL shortener ringan — bikin link panjang jadi pendek & rapi.",
+    desc: "A minimal URL shortener — turn long links into clean, shareable ones.",
     tags: ["url-shortener", "web"] },
   { title: "animestream", tech: "JavaScript", url: "https://github.com/Veanyxz/animestream",
-    desc: "Platform streaming anime dengan UI modern dan minim iklan.",
+    desc: "An anime streaming platform with a modern interface and minimal ads.",
     tags: ["anime", "streaming", "web"] },
   { title: "filezone", tech: "EJS", url: "https://github.com/Veanyxz/filezone",
-    desc: "File hosting sederhana — upload & share file lewat browser.",
+    desc: "A simple file-hosting service — upload and share files straight from the browser.",
     tags: ["file-hosting", "node"] },
   { title: "ytdl-downloader", tech: "HTML", url: "https://github.com/Veanyxz/ytdl-downloader",
-    desc: "Downloader video YouTube berbasis web.",
+    desc: "A web-based YouTube video downloader.",
     tags: ["youtube", "downloader", "web"] },
   { title: "my-weather-app", tech: "JavaScript", url: "https://github.com/Veanyxz/my-weather-app",
-    desc: "Aplikasi cuaca sederhana dengan data real-time.",
+    desc: "A weather application with real-time data.",
     tags: ["weather", "api", "web"] },
   { title: "Speech-to-text", tech: "HTML", url: "https://github.com/Veanyxz/Speech-to-text",
-    desc: "Konversi suara ke teks langsung dari browser.",
+    desc: "Browser-based speech-to-text conversion.",
     tags: ["speech", "stt", "web"] },
   { title: "AccSpotify", tech: "PHP", url: "https://github.com/Veanyxz/AccSpotify",
-    desc: "Checker akun Spotify berbasis web.",
+    desc: "A web-based tool for checking Spotify account status.",
     tags: ["spotify", "checker", "web"] },
   { title: "cekrek-web", tech: "HTML", url: "https://github.com/Veanyxz/cekrek-web",
-    desc: "Tool cek rekening / akun berbasis web.",
+    desc: "A web-based tool for validating account and rekening data.",
     tags: ["checker", "web", "tool"] },
   { title: "shopbeta", tech: "JavaScript", url: "https://github.com/Veanyxz/shopbeta",
-    desc: "Prototype web app toko / e-commerce sederhana.",
+    desc: "A simple e-commerce web app prototype.",
     tags: ["ecommerce", "web", "shop"] },
   { title: "among-us-online", tech: "JavaScript", url: "https://github.com/Veanyxz/among-us-online",
-    desc: "Game Among Us versi online di browser.",
+    desc: "An online, browser-based Among Us game.",
     tags: ["game", "among-us", "web"] },
   { title: "hangman", tech: "HTML", url: "https://github.com/Veanyxz/hangman",
-    desc: "Game tebak kata hangman klasik.",
+    desc: "A classic word-guessing game.",
     tags: ["game", "hangman", "web"] },
   { title: "dinorun", tech: "JavaScript", url: "https://github.com/Veanyxz/dinorun",
-    desc: "Clone game Dino Run (offline chrome).",
+    desc: "A clone of the Chrome offline Dino Run game.",
     tags: ["game", "dino", "web"] },
   { title: "Flappybird-JS", tech: "JavaScript", url: "https://github.com/Veanyxz/Flappybird-JS",
-    desc: "Clone Flappy Bird pakai JavaScript murni.",
+    desc: "A pure-JavaScript Flappy Bird clone.",
     tags: ["game", "flappybird", "web"] },
   { title: "pacman", tech: "JavaScript", url: "https://github.com/Veanyxz/pacman",
-    desc: "Clone Pac-Man klasik di browser.",
+    desc: "A classic Pac-Man clone for the browser.",
     tags: ["game", "pacman", "web"] },
   { title: "calculator", tech: "CSS", url: "https://github.com/Veanyxz/calculator",
-    desc: "Kalkulator sederhana dengan UI rapi.",
+    desc: "A clean, simple calculator.",
     tags: ["calculator", "web", "tool"] },
 ];
 
@@ -282,7 +282,7 @@ function renderShowcase() {
           <p>${p.desc}</p>
           <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
           <a class="card-link" href="${p.url}" target="_blank" rel="noopener">
-            Kunjungi Website
+            Visit Project
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
           </a>
         </div>`;
@@ -353,11 +353,11 @@ function contactForm() {
         body,
       });
       if (!res.ok) throw new Error("bad status " + res.status);
-      note.textContent = "> message sent! gue bakal bales secepatnya.";
+      note.textContent = "> Message sent — I'll get back to you shortly.";
       form.reset();
     } catch (err) {
       note.style.color = "#ff7b7b";
-      note.textContent = "> gagal kirim, coba lagi atau email langsung ke admin@vean.my.id";
+      note.textContent = "> Something went wrong. Please try again, or email me directly at admin@vean.my.id.";
     }
     btn.disabled = false;
     btn.textContent = orig;
