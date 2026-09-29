@@ -31,10 +31,10 @@ const PROJECTS = [
 ];
 
 const STACK = [
-  { name: "Frontend", items: ["JavaScript", "HTML / CSS", "React / Next.js", "Tailwind"] },
-  { name: "Backend", items: ["Node.js", "Express", "PHP", "Python"] },
-  { name: "Mobile", items: ["Kotlin", "Android", "Jetpack Compose", "Flutter"] },
-  { name: "Security", items: ["OSINT", "Recon", "Pentest", "Reverse Engineering"] },
+  { name: "Frontend", items: ["JavaScript", "TypeScript", "HTML / CSS", "React", "Next.js", "Tailwind CSS", "Sass", "Vite"] },
+  { name: "Backend", items: ["Node.js", "Express", "PHP", "Python", "MySQL", "PostgreSQL", "MongoDB", "Redis"] },
+  { name: "Mobile", items: ["Kotlin", "Android", "Jetpack Compose", "Flutter", "Swift", "SwiftUI", "React Native", "Firebase"] },
+  { name: "Apps", items: ["Electron", "Tauri", ".NET", "C#", "WPF", "Qt", "PyQt", "pywebview"] },
 ];
 
 const PROJECTS_VISIBLE = 6;
