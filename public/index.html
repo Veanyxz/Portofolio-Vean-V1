@@ -97,7 +97,7 @@
           </div>
 
           <div class="hero-photo">
-            <div class="photo-frame">
+            <div class="photo-frame" id="photo-frame" role="button" tabindex="0" aria-label="View profile photo">
               <div class="photo-ring"></div>
               <img src="https://avatars.githubusercontent.com/u/50613879?v=4" alt="Vean" width="360" height="360" />
             </div>
@@ -236,6 +236,16 @@
       </div>
     </div>
   </footer>
+
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" data-modal-close></div>
+    <div class="modal-wrap">
+      <button class="modal-close" data-modal-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-panel" id="modal-panel"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

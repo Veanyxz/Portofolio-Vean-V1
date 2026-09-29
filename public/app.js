@@ -261,6 +261,7 @@ function renderShowcase() {
     PROJECTS.slice(0, shown).forEach((p, i) => {
       const card = document.createElement("article");
       card.className = "card reveal";
+      card.dataset.idx = i;
       card.style.transitionDelay = (i % 3) * 90 + "ms";
       card.innerHTML = `
         <div class="card-preview">
@@ -361,6 +362,91 @@ function contactForm() {
   });
 }
 
+/* ============================================================
+   Modal / lightbox
+   ============================================================ */
+function openModal(html) {
+  const modal = $("#modal");
+  const panel = $("#modal-panel");
+  if (!modal || !panel) return;
+  panel.innerHTML = html;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  // cursor ring hover on injected interactive elements
+  const ring = $("#cursor-ring");
+  if (ring) {
+    panel.querySelectorAll("a, button").forEach((el) => {
+      el.addEventListener("mouseenter", () => ring.classList.add("active"));
+      el.addEventListener("mouseleave", () => ring.classList.remove("active"));
+    });
+  }
+}
+
+function closeModal() {
+  const modal = $("#modal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+function openProjectModal(p) {
+  openModal(`
+    <div class="modal-project">
+      <div class="modal-shot"><img src="${p.shot}" alt="${p.title}" /></div>
+      <div class="modal-body">
+        <span class="card-tech">${p.tech}</span>
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+        <div class="modal-actions">
+          <a class="btn btn-primary" href="${p.url}" target="_blank" rel="noopener">Visit Project ↗</a>
+          <button class="btn btn-ghost" data-modal-close>Close</button>
+        </div>
+      </div>
+    </div>`);
+}
+
+function initModal() {
+  const modal = $("#modal");
+  if (!modal) return;
+
+  $$("[data-modal-close]").forEach((el) => el.addEventListener("click", closeModal));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+  });
+
+  // profile photo lightbox
+  const photo = $("#photo-frame");
+  if (photo) {
+    const activate = () => openModal(`
+      <div class="modal-photo">
+        <img src="https://avatars.githubusercontent.com/u/50613879?v=4" alt="Vean" />
+        <div class="modal-meta">
+          <span class="modal-title">Vean</span>
+          <span class="mono dim">Full-Stack Developer · Security Researcher</span>
+        </div>
+      </div>`);
+    photo.addEventListener("click", activate);
+    photo.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); }
+    });
+  }
+
+  // project card lightbox (delegation)
+  const grid = $("#showcase-grid");
+  if (grid) {
+    grid.addEventListener("click", (e) => {
+      if (e.target.closest(".card-link")) return; // let the link open the site
+      const card = e.target.closest(".card");
+      if (!card || card.dataset.idx == null) return;
+      openProjectModal(PROJECTS[+card.dataset.idx]);
+    });
+  }
+}
+
 function init() {
   // hide hero behind opaque preloader (avoid flash)
   $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta, .hero-photo").forEach((el) => el.classList.add("hero-anim"));
@@ -374,6 +460,7 @@ function init() {
   nav();
   smoothScroll();
   contactForm();
+  initModal();
   runBoot();
 }
 
