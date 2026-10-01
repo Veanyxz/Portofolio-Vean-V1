@@ -311,6 +311,10 @@ function renderShowcase() {
 
   moreBtn.addEventListener("click", () => { shown = Math.min(shown + 6, PROJECTS.length); render(); });
   render();
+
+  // sync hero counter dengan jumlah project sebenarnya
+  const counter = $("#live-projects-count");
+  if (counter) counter.setAttribute("data-count", PROJECTS.length);
 }
 
 /* ============================================================
