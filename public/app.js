@@ -455,100 +455,13 @@ function initModal() {
   }
 }
 
-/* ===== Beat-driven ring animation ===== */
+/* ===== Music toggle + ring loop ===== */
 let musicAudio = null;
 let musicPlaying = false;
-let musicMuted = false;
-let audioCtx = null;
-let analyser = null;
-let source = null;
-let dataArray = null;
-let beatLoopId = null;
-let lastBeatTime = 0;
-let smoothedEnergy = 0;
 
-function ensureAudioAnalysis() {
-  if (!audioCtx) {
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.8;
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-      source = audioCtx.createMediaElementSource(musicAudio);
-      source.connect(analyser);
-      source.connect(audioCtx.destination);
-    } catch (e) {
-      console.warn('Audio analysis init failed:', e);
-      return;
-    }
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-}
-
-function detectBeat() {
-  if (!analyser || !dataArray) return false;
-  analyser.getByteFrequencyData(dataArray);
-  let bassEnergy = 0;
-  for (let i = 0; i < 8; i++) bassEnergy += dataArray[i];
-  bassEnergy /= 8;
-  const now = performance.now();
-  const cooldown = 280;
-  const minEnergy = 25;
-  const threshold = Math.max(minEnergy, smoothedEnergy * 1.28);
-  if (bassEnergy > threshold && (now - lastBeatTime) > cooldown) {
-    lastBeatTime = now;
-    smoothedEnergy = bassEnergy * 0.6 + smoothedEnergy * 0.4;
-    return true;
-  }
-  smoothedEnergy = bassEnergy * 0.06 + smoothedEnergy * 0.94;
-  return false;
-}
-
-function startBeatDetection() {
-  if (beatLoopId) return;
-  beatLoopId = requestAnimationFrame(beatLoop);
-}
-
-function stopBeatDetection() {
-  if (beatLoopId) {
-    cancelAnimationFrame(beatLoopId);
-    beatLoopId = null;
-  }
-}
-
-function beatLoop() {
-  if (musicPlaying && !musicMuted && musicAudio) {
-    if (analyser && dataArray) {
-      analyser.getByteFrequencyData(dataArray);
-      // reactivity: energi low-mid, normalisasi ke 0..1
-      let e = 0;
-      for (let i = 0; i < 16; i++) e += dataArray[i];
-      e = Math.min(1, (e / 16) / 110);
-      // smoothing cepat naik, lambat turun (attack/decay)
-      if (!beatLoop._r) beatLoop._r = 0;
-      const target = Math.pow(e, 0.8);
-      beatLoop._r += (target - beatLoop._r) * (target > beatLoop._r ? 0.45 : 0.12);
-      document.querySelector('.photo-frame')?.style.setProperty('--react', beatLoop._r.toFixed(3));
-    }
-    if (detectBeat()) {
-      const ring = document.querySelector('.photo-ring');
-      if (ring) {
-        ring.classList.remove('beat');
-        void ring.offsetWidth;
-        ring.classList.add('beat');
-      }
-    }
-  } else {
-    // decay ke 0 saat pause
-    if (beatLoop._r && beatLoop._r > 0.001) {
-      beatLoop._r *= 0.9;
-      document.querySelector('.photo-frame')?.style.setProperty('--react', beatLoop._r.toFixed(3));
-    }
-  }
-  beatLoopId = requestAnimationFrame(beatLoop);
+function setRingActive(on) {
+  const frame = document.querySelector('.photo-frame');
+  if (frame) frame.classList.toggle('music-on', on);
 }
 
 function initMusic() {
@@ -559,15 +472,14 @@ function initMusic() {
   document.body.classList.add('has-music');
 
   function updateUI() {
-    toggle.classList.toggle('paused', !musicPlaying || musicMuted);
+    toggle.classList.toggle('paused', !musicPlaying);
   }
 
   function tryPlay() {
     musicAudio.play().then(() => {
       musicPlaying = true;
+      setRingActive(true);
       updateUI();
-      ensureAudioAnalysis();
-      startBeatDetection();
     }).catch((e) => {
       console.warn('Music autoplay failed:', e);
       updateUI();
@@ -578,17 +490,12 @@ function initMusic() {
 
   toggle.addEventListener('click', () => {
     if (!musicPlaying) {
-      ensureAudioAnalysis();
       tryPlay();
-    } else if (musicMuted) {
-      musicAudio.muted = false;
-      musicMuted = false;
-      updateUI();
     } else {
       musicAudio.pause();
       musicPlaying = false;
+      setRingActive(false);
       updateUI();
-      stopBeatDetection();
     }
   });
 }
