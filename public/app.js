@@ -455,57 +455,116 @@ function initModal() {
   }
 }
 
+/* ===== Beat-driven ring animation ===== */
+let musicAudio = null;
+let musicPlaying = false;
+let musicMuted = false;
+let audioCtx = null;
+let analyser = null;
+let source = null;
+let dataArray = null;
+let beatLoopId = null;
+let lastBeatTime = 0;
+let smoothedEnergy = 0;
+
+function ensureAudioAnalysis() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      source = audioCtx.createMediaElementSource(musicAudio);
+      source.connect(analyser);
+    } catch (e) {
+      console.warn('Audio analysis init failed:', e);
+      return;
+    }
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function detectBeat() {
+  if (!analyser || !dataArray) return false;
+  analyser.getByteFrequencyData(dataArray);
+  let bassEnergy = 0;
+  for (let i = 0; i < 5; i++) bassEnergy += dataArray[i];
+  bassEnergy /= 5;
+  smoothedEnergy = smoothedEnergy * 0.92 + bassEnergy * 0.08;
+  const now = performance.now();
+  if (bassEnergy > smoothedEnergy * 1.45 && bassEnergy > 40 && (now - lastBeatTime) > 190) {
+    lastBeatTime = now;
+    return true;
+  }
+  return false;
+}
+
+function startBeatDetection() {
+  if (beatLoopId) return;
+  beatLoopId = requestAnimationFrame(beatLoop);
+}
+
+function stopBeatDetection() {
+  if (beatLoopId) {
+    cancelAnimationFrame(beatLoopId);
+    beatLoopId = null;
+  }
+}
+
+function beatLoop() {
+  if (musicPlaying && !musicMuted && musicAudio) {
+    if (detectBeat()) {
+      const ring = document.querySelector('.photo-ring');
+      if (ring) {
+        ring.classList.remove('beat');
+        void ring.offsetWidth;
+        ring.classList.add('beat');
+      }
+    }
+  }
+  beatLoopId = requestAnimationFrame(beatLoop);
+}
+
 function initMusic() {
-  const audio = $('#bg-music');
+  musicAudio = $('#bg-music');
   const toggle = $('#music-toggle');
-  if (!audio || !toggle) return;
+  if (!musicAudio || !toggle) return;
 
   document.body.classList.add('has-music');
 
-  let playing = false;
-  let muted = false;
-
   function updateUI() {
-    toggle.classList.toggle('paused', !playing || muted);
+    toggle.classList.toggle('paused', !musicPlaying || musicMuted);
   }
 
-  audio.play().then(() => {
-    playing = true;
-    updateUI();
-  }).catch(() => {
-    audio.muted = true;
-    muted = true;
-    audio.play().then(() => {
-      playing = true;
+  function tryPlay() {
+    musicAudio.play().then(() => {
+      musicPlaying = true;
       updateUI();
+      ensureAudioAnalysis();
+      startBeatDetection();
     }).catch(() => {
       updateUI();
     });
-  });
+  }
+
+  tryPlay();
 
   toggle.addEventListener('click', () => {
-    if (!playing) {
-      audio.muted = false;
-      muted = false;
-      audio.play().then(() => {
-        playing = true;
-        updateUI();
-      }).catch(() => {
-        audio.muted = true;
-        muted = true;
-        audio.play().then(() => {
-          playing = true;
-          updateUI();
-        });
-      });
-    } else if (muted) {
-      audio.muted = false;
-      muted = false;
+    if (!musicPlaying) {
+      ensureAudioAnalysis();
+      tryPlay();
+    } else if (musicMuted) {
+      musicAudio.muted = false;
+      musicMuted = false;
       updateUI();
     } else {
-      audio.pause();
-      playing = false;
+      musicAudio.pause();
+      musicPlaying = false;
       updateUI();
+      stopBeatDetection();
     }
   });
 }
