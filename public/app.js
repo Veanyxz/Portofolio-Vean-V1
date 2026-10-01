@@ -492,14 +492,18 @@ function detectBeat() {
   if (!analyser || !dataArray) return false;
   analyser.getByteFrequencyData(dataArray);
   let bassEnergy = 0;
-  for (let i = 0; i < 5; i++) bassEnergy += dataArray[i];
-  bassEnergy /= 5;
-  smoothedEnergy = smoothedEnergy * 0.92 + bassEnergy * 0.08;
+  for (let i = 0; i < 8; i++) bassEnergy += dataArray[i];
+  bassEnergy /= 8;
   const now = performance.now();
-  if (bassEnergy > smoothedEnergy * 1.45 && bassEnergy > 40 && (now - lastBeatTime) > 190) {
+  const cooldown = 280;
+  const minEnergy = 25;
+  const threshold = Math.max(minEnergy, smoothedEnergy * 1.28);
+  if (bassEnergy > threshold && (now - lastBeatTime) > cooldown) {
     lastBeatTime = now;
+    smoothedEnergy = bassEnergy * 0.6 + smoothedEnergy * 0.4;
     return true;
   }
+  smoothedEnergy = bassEnergy * 0.06 + smoothedEnergy * 0.94;
   return false;
 }
 
