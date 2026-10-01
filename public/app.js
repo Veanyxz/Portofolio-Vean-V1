@@ -455,6 +455,61 @@ function initModal() {
   }
 }
 
+function initMusic() {
+  const audio = $('#bg-music');
+  const toggle = $('#music-toggle');
+  if (!audio || !toggle) return;
+
+  document.body.classList.add('has-music');
+
+  let playing = false;
+  let muted = false;
+
+  function updateUI() {
+    toggle.classList.toggle('paused', !playing || muted);
+  }
+
+  audio.play().then(() => {
+    playing = true;
+    updateUI();
+  }).catch(() => {
+    audio.muted = true;
+    muted = true;
+    audio.play().then(() => {
+      playing = true;
+      updateUI();
+    }).catch(() => {
+      updateUI();
+    });
+  });
+
+  toggle.addEventListener('click', () => {
+    if (!playing) {
+      audio.muted = false;
+      muted = false;
+      audio.play().then(() => {
+        playing = true;
+        updateUI();
+      }).catch(() => {
+        audio.muted = true;
+        muted = true;
+        audio.play().then(() => {
+          playing = true;
+          updateUI();
+        });
+      });
+    } else if (muted) {
+      audio.muted = false;
+      muted = false;
+      updateUI();
+    } else {
+      audio.pause();
+      playing = false;
+      updateUI();
+    }
+  });
+}
+
 function init() {
   // hide hero behind opaque preloader (avoid flash)
   $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta, .hero-photo").forEach((el) => el.classList.add("hero-anim"));
@@ -469,6 +524,7 @@ function init() {
   smoothScroll();
   contactForm();
   initModal();
+  initMusic();
   runBoot();
 }
 
