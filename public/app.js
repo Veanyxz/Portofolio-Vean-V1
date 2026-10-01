@@ -477,6 +477,7 @@ function ensureAudioAnalysis() {
       dataArray = new Uint8Array(analyser.frequencyBinCount);
       source = audioCtx.createMediaElementSource(musicAudio);
       source.connect(analyser);
+      source.connect(audioCtx.destination);
     } catch (e) {
       console.warn('Audio analysis init failed:', e);
       return;
@@ -545,7 +546,8 @@ function initMusic() {
       updateUI();
       ensureAudioAnalysis();
       startBeatDetection();
-    }).catch(() => {
+    }).catch((e) => {
+      console.warn('Music autoplay failed:', e);
       updateUI();
     });
   }
