@@ -521,6 +521,18 @@ function stopBeatDetection() {
 
 function beatLoop() {
   if (musicPlaying && !musicMuted && musicAudio) {
+    if (analyser && dataArray) {
+      analyser.getByteFrequencyData(dataArray);
+      // reactivity: energi low-mid, normalisasi ke 0..1
+      let e = 0;
+      for (let i = 0; i < 16; i++) e += dataArray[i];
+      e = Math.min(1, (e / 16) / 110);
+      // smoothing cepat naik, lambat turun (attack/decay)
+      if (!beatLoop._r) beatLoop._r = 0;
+      const target = Math.pow(e, 0.8);
+      beatLoop._r += (target - beatLoop._r) * (target > beatLoop._r ? 0.45 : 0.12);
+      document.querySelector('.photo-frame')?.style.setProperty('--react', beatLoop._r.toFixed(3));
+    }
     if (detectBeat()) {
       const ring = document.querySelector('.photo-ring');
       if (ring) {
@@ -528,6 +540,12 @@ function beatLoop() {
         void ring.offsetWidth;
         ring.classList.add('beat');
       }
+    }
+  } else {
+    // decay ke 0 saat pause
+    if (beatLoop._r && beatLoop._r > 0.001) {
+      beatLoop._r *= 0.9;
+      document.querySelector('.photo-frame')?.style.setProperty('--react', beatLoop._r.toFixed(3));
     }
   }
   beatLoopId = requestAnimationFrame(beatLoop);
