@@ -92,6 +92,38 @@ body::after {
 }
 body.has-cursor, body.has-cursor * { cursor: none; }
 
+/* ===== Background music ===== */
+.bg-music { position: absolute; width: 0; height: 0; pointer-events: none; visibility: hidden; }
+.music-toggle {
+  position: fixed; bottom: 22px; right: 22px; z-index: 900;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.55); border: 1px solid var(--border);
+  color: var(--accent); cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.25s var(--ease);
+}
+.music-toggle:hover { background: rgba(0,255,156,0.12); border-color: var(--border-hi); transform: scale(1.08); }
+.music-toggle svg { width: 20px; height: 20px; transition: opacity 0.2s; }
+.music-toggle .icon-off { position: absolute; opacity: 0; }
+.music-toggle.playing .icon-on { position: absolute; opacity: 0; }
+.music-toggle.playing .icon-off { opacity: 1; }
+
+/* ===== Music sync progress indicator ===== */
+.music-sync {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  transition: width 0.3s linear;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+body.has-music .music-sync,
+body.has-music .music-toggle {
+  opacity: 1;
+}
+body .music-sync.active { opacity: 1; }
+
 .scroll-progress {
   position: fixed; top: 0; left: 0; height: 2px; width: 0%;
   background: var(--accent); z-index: 300;
