@@ -28,6 +28,10 @@ const PROJECTS = [
     domain: "audio.vean.my.id", shot: "shots/audio.jpg",
     desc: "A fully browser-based audio editor — trim, tune speed and pitch, apply effects, and import from YouTube, then export files ready to upload. No install, no server.",
     tags: ["audio editor", "web audio api", "creator tool"] },
+  { title: "CodeBin", tech: "JavaScript", url: "https://codebin.vean.my.id/#/",
+    domain: "codebin.vean.my.id", shot: "shots/codebin.jpg",
+    desc: "A zero-server code snippet sharer. Paste code, pick a language, and get a permanent link with real syntax highlighting. The payload is compressed with DEFLATE and encoded into the URL fragment — nothing is stored, no request ever leaves your machine.",
+    tags: ["code sharing", "zero-server", "web tool"] },
 ];
 
 const STACK = [
