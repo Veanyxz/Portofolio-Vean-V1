@@ -16,6 +16,10 @@ const ROLES = [
 // Tambah proyek baru: copy satu blok { } di bawah, isi title/url/domain/shot/tech/desc/tags.
 // `shot` = path screenshot di public/shots/ (jpg 1280x720).
 const PROJECTS = [
+  { title: "DramaStream", tech: "React · Vite · HLS", url: "https://drama.vean.my.id",
+    domain: "drama.vean.my.id", shot: "shots/drama.jpg",
+    desc: "A short-drama streaming hub that aggregates DramaBox, GoodShort, ShortMax, NetShort and friends in one place — thousands of episodes with Indonesian subtitles, VIP access without login, adaptive HLS playback, plus a signed Android APK.",
+    tags: ["streaming", "react spa", "video player"] },
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
     domain: "uploader.vean.my.id", shot: "shots/uploader.jpg",
     desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly — media stored permanently, everything else on high-speed direct upload.",
