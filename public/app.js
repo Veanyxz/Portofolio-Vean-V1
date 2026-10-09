@@ -38,8 +38,8 @@ const PROJECTS = [
     tags: ["streaming", "react spa", "video player"] },
   { title: "DigiPasar", tech: "JavaScript", url: "https://market.vean.my.id",
     domain: "market.vean.my.id", shot: "shots/digipasar.jpg",
-    desc: "An Indonesian digital-goods marketplace — game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and serverless checkout.",
-    tags: ["marketplace", "digital goods", "serverless"] },
+    desc: "An Indonesian digital-goods marketplace — game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
+    tags: ["marketplace", "digital goods", "e-commerce"] },
 ];
 
 const STACK = [
