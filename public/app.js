@@ -36,6 +36,10 @@ const PROJECTS = [
     domain: "drama.vean.my.id", shot: "shots/drama.jpg",
     desc: "A short-drama streaming hub that aggregates DramaBox, GoodShort, ShortMax, NetShort and friends in one place — thousands of episodes with Indonesian subtitles, VIP access without login, adaptive HLS playback, plus a signed Android APK.",
     tags: ["streaming", "react spa", "video player"] },
+  { title: "DigiPasar", tech: "JavaScript · Netlify Functions", url: "https://market.vean.my.id",
+    domain: "market.vean.my.id", shot: "shots/digipasar.jpg",
+    desc: "An Indonesian digital-goods marketplace — game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and serverless checkout.",
+    tags: ["marketplace", "digital goods", "serverless"] },
 ];
 
 const STACK = [
