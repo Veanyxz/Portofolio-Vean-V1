@@ -1,0 +1,13 @@
+{
+  "name": "vean-portfolio",
+  "private": true,
+  "version": "2.0.0",
+  "description": "vean.my.id portfolio - static site + guestbook function",
+  "scripts": {
+    "dev": "netlify dev",
+    "deploy": "netlify deploy --prod --dir=public"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.7"
+  }
+}
