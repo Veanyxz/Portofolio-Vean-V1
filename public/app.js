@@ -231,7 +231,7 @@ function renderShowcase() {
   var wrap = q("#showcase-grid");
   if (!wrap) return;
   var more = q("#load-more");
-  var initial = 4;
+  var initial = PROJECTS.length;
   var total = PROJECTS.length;
   var show = Math.min(total, initial + shownCount);
   wrap.innerHTML = PROJECTS.slice(0, show).map(cardHTML).join("");
