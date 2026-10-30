@@ -2,7 +2,7 @@
 // Guestbook API: GET -> list entries, POST -> append entry.
 // Storage: Netlify Blobs (no external DB, no credentials in the repo).
 
-const { getStore } = require("@netlify/blobs");
+const { getStore, connectLambda } = require("@netlify/blobs");
 
 const STORE = "guestbook";
 const KEY = "entries.json";
@@ -61,7 +61,9 @@ exports.handler = async function (event) {
 
   let store;
   try {
-    store = getStore({ name: STORE, consistency: "strong" });
+    // bind Blobs to this invocation (siteID/token from the function event context)
+    connectLambda(event);
+    store = getStore(STORE);
   } catch (e) {
     return json(500, { error: "storage_unavailable", detail: String(e && e.message || e) });
   }
