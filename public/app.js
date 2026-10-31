@@ -94,29 +94,51 @@ function countUp(el) {
   requestAnimationFrame(frame);
 }
 
+/* ============================================================
+   HANGING CARDS - pendulum physics + press feedback
+   Kartu bergantung di hook, berayun mengikuti kursor/klik,
+   dan bisa dipencet (skala turun + glow).
+   ============================================================ */
+
+/* ============================================================
+   LANYARD — mount the rope physics on every showcase card.
+   Interaction (drag / press / click) lives in lanyard.js.
+   ============================================================ */
+
+var lanyards = [];
+
 function tilt() {
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-  $$(".card").forEach((card) => {
-    const MAX = 9;
-    const onMove = (e) => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      const ry = (px - 0.5) * 2 * MAX;
-      const rx = -(py - 0.5) * 2 * MAX;
-      card.classList.add("tilting");
-      card.style.setProperty("--rx", rx.toFixed(2) + "deg");
-      card.style.setProperty("--ry", ry.toFixed(2) + "deg");
+  lanyards = [];
+  if (!window.Lanyard) return;
+
+  qa(".hanger").forEach(function (wrap) {
+    var idx = parseInt(wrap.getAttribute("data-idx"), 10);
+    var inst = window.Lanyard.mount(wrap, {
+      onClick: function () {
+        if (!isNaN(idx) && PROJECTS[idx]) openModal(PROJECTS[idx]);
+      }
+    });
+    if (inst) lanyards.push(inst);
+
+    // kursor tilt 3D tetap: set --rx / --ry / --mx / --my
+    var card = wrap.querySelector(".card");
+    if (!card) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    wrap.addEventListener("pointermove", function (e) {
+      if (wrap.classList.contains("swinging")) return;
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      card.style.setProperty("--ry", ((px - 0.5) * 2 * 6).toFixed(2) + "deg");
+      card.style.setProperty("--rx", (-(py - 0.5) * 2 * 5).toFixed(2) + "deg");
       card.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
       card.style.setProperty("--my", (py * 100).toFixed(1) + "%");
-    };
-    const reset = () => {
-      card.classList.remove("tilting");
-      card.style.setProperty("--rx", "0deg");
+    });
+    wrap.addEventListener("pointerleave", function () {
       card.style.setProperty("--ry", "0deg");
-    };
-    card.addEventListener("mousemove", onMove);
-    card.addEventListener("mouseleave", reset);
+      card.style.setProperty("--rx", "0deg");
+    });
   });
 }
 
@@ -133,8 +155,8 @@ const SOCIALS = [
   { name: "Website", handle: "vean.my.id", url: "https://vean.my.id", icon: "globe" },
 ];
 
-const LT = String.fromCharCode(60);
-const GT = String.fromCharCode(62);
+var LT = String.fromCharCode(60);
+var GT = String.fromCharCode(62);
 
 function svg(inner, vb) {
   return LT + 'svg viewBox="' + (vb || '0 0 24 24') + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"' + GT + inner + LT + '/svg' + GT;
@@ -277,27 +299,30 @@ function cardHTML(pj, idx) {
     return '<span class="tag">' + esc(t) + '</span>';
   }).join("");
   var n = String(idx + 1).padStart(2, "0");
-  return '<article class="card glass-card reveal" data-idx="' + idx + '">' +
-    '<span class="card-glare"></span>' +
-    '<div class="card-preview">' +
-      '<img src="' + esc(pj.shot) + '" alt="' + esc(pj.title) + ' screenshot" loading="lazy" decoding="async">' +
-      '<span class="card-index mono">' + n + '</span>' +
-    '</div>' +
-    '<div class="card-body">' +
-      '<div class="card-top">' +
-        '<h3>' + esc(pj.title) + '</h3>' +
-        '<span class="card-tech mono">' + esc(pj.tech) + '</span>' +
+  return '<div class="hanger reveal" data-idx="' + idx + '">' +
+    '<article class="card glass-card">' +
+      '<span class="card-glare"></span>' +
+      '<div class="card-preview">' +
+        '<img src="' + esc(pj.shot) + '" alt="' + esc(pj.title) + ' screenshot" loading="lazy" decoding="async">' +
+        '<span class="card-index mono">' + n + '</span>' +
       '</div>' +
-      '<p class="card-desc">' + esc(pj.desc) + '</p>' +
-      '<div class="card-tags">' + tags + '</div>' +
-      '<div class="card-foot">' +
-        '<a class="card-link" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">' +
-          '<span class="mono">' + esc(pj.domain) + '</span>' + ICONS.arrow +
-        '</a>' +
+      '<div class="card-body">' +
+        '<div class="card-top">' +
+          '<h3>' + esc(pj.title) + '</h3>' +
+          '<span class="card-tech mono">' + esc(pj.tech) + '</span>' +
+        '</div>' +
+        '<p class="card-desc">' + esc(pj.desc) + '</p>' +
+        '<div class="card-tags">' + tags + '</div>' +
+        '<div class="card-foot">' +
+          '<a class="card-link" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">' +
+            '<span class="mono">' + esc(pj.domain) + '</span>' + ICONS.arrow +
+          '</a>' +
+        '</div>' +
       '</div>' +
-    '</div>' +
-  '</article>';
+    '</article>' +
+  '</div>';
 }
+
 function openModal(pj) {
   var m = q("#modal");
   var panel = q("#modal-panel");
@@ -330,11 +355,7 @@ function modalWiring() {
     var t = e.target;
     if (t.closest && t.closest("[data-modal-close]")) { closeModal(); return; }
     if (t.id === "modal") { closeModal(); return; }
-    var card = t.closest && t.closest(".card");
-    if (card && !(t.closest("a"))) {
-      var i = parseInt(card.getAttribute("data-idx"), 10);
-      if (!isNaN(i) && PROJECTS[i]) openModal(PROJECTS[i]);
-    }
+    // card clicks are handled by lanyard.js (drag-aware), not here
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") closeModal();
