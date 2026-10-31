@@ -11,9 +11,11 @@
 
   var body = stage.querySelector(".badge-body");
   var card = stage.querySelector(".id-card");
-  var path = stage.querySelector(".badge-rope-line");
-  var band = stage.querySelector(".badge-rope-band");
-  if (!body || !card || !path) return;
+  var fill = stage.querySelector(".badge-rope-fill");
+  var edge = stage.querySelector(".badge-rope-edge");
+  var weave = stage.querySelector(".badge-rope-weave");
+  var center = stage.querySelector(".badge-rope-centerline");
+  if (!body || !card || !fill) return;
 
   var NS = "http://www.w3.org/2000/svg";
 
@@ -44,7 +46,7 @@
     cardH = card.offsetHeight || Math.round(stageW * 1.5);
     stage.style.setProperty("--cord", REST + "px");
     stage.style.height = Math.ceil(REST + cardH + 26) + "px";
-    var svg = path.ownerSVGElement;
+    var svg = fill.ownerSVGElement;
     svg.setAttribute("viewBox", "0 0 " + stageW + " " + (REST + cardH + 26));
     svg.setAttribute("width", String(stageW));
     svg.setAttribute("height", String(REST + cardH + 26));
@@ -63,8 +65,11 @@
     for (var i = 0; i < N; i++) {
       d += " L " + (cx + pts[i].x).toFixed(2) + " " + pts[i].y.toFixed(2);
     }
-    path.setAttribute("d", d);
-    if (band) band.setAttribute("d", d);
+    // satu geometri, empat lapis visual: rim, bodi pita, tenun, garis teks
+    fill.setAttribute("d", d);
+    if (edge) edge.setAttribute("d", d);
+    if (weave) weave.setAttribute("d", d);
+    if (center) center.setAttribute("d", d);
 
     var tail = pts[N - 1];
     var prev = pts[N - 2];
