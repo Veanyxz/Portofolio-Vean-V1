@@ -43,12 +43,13 @@ function sanitizePhoto(src) {
 
 async function readAll(store) {
   try {
-    const data = await store.get(KEY, { type: "json", consistency: "strong" });
+    const data = await store.get(KEY, { type: "json" });
     if (Array.isArray(data)) return data;
     if (data && Array.isArray(data.items)) return data.items;
     return [];
   } catch (e) {
-    return [];
+    // jangan pura-pura kosong: error baca harus terlihat, bukan count:0 palsu
+    return null;
   }
 }
 
@@ -63,14 +64,14 @@ exports.handler = async function (event) {
   try {
     // bind Blobs to this invocation (siteID/token from the function event context)
     connectLambda(event);
-    // strong: default eventual read returned a stale list right after a write
-    store = getStore({ name: STORE, consistency: "strong" });
+    store = getStore(STORE);
   } catch (e) {
     return json(500, { error: "storage_unavailable", detail: String(e && e.message || e) });
   }
 
   if (method === "GET") {
     const items = await readAll(store);
+    if (!items) return json(500, { error: "storage_read_failed" });
     items.sort((a, b) => (b.ts || 0) - (a.ts || 0));
     return json(200, { items: items.slice(0, MAX_ITEMS), count: items.length });
   }
@@ -91,6 +92,7 @@ exports.handler = async function (event) {
     if (text.length < 3) return json(400, { error: "Pesan minimal 3 karakter." });
 
     const items = await readAll(store);
+    if (!items) return json(500, { error: "storage_read_failed" });
     const item = {
       id: (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)),
       name: name,
