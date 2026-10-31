@@ -417,10 +417,12 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   color: rgba(0, 255, 156, .45);
 }
 .id-back-body { padding: 14px 0 10px; }
-.id-back-name {
+.id-back-quote {
   font-family: var(--font-head);
-  font-size: clamp(19px, 2.2vw, 24px);
-  font-weight: 700; color: var(--text); line-height: 1.1;
+  font-size: clamp(15px, 1.7vw, 18px);
+  font-weight: 600; font-style: italic;
+  color: var(--accent);
+  line-height: 1.35;
   margin-bottom: 8px;
 }
 .id-back-tagline {
@@ -447,6 +449,20 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .id-back-list a:hover { color: var(--accent); }
+.id-sign {
+  margin-top: 10px;
+  font-family: var(--font-head);
+  font-size: 20px; font-weight: 700; letter-spacing: .02em;
+  color: rgba(0, 255, 156, .82);
+  text-align: right;
+  transform: rotate(-4deg);
+  text-shadow: 0 0 18px rgba(0, 255, 156, .28);
+  font-style: italic;
+}
+.id-sign span {
+  border-bottom: 1px solid rgba(0, 255, 156, .3);
+  padding-bottom: 1px;
+}
 .id-barcode {
   height: 22px; margin-top: 12px; border-radius: 3px;
   background: repeating-linear-gradient(90deg,
