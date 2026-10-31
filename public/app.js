@@ -269,7 +269,7 @@ function renderShowcase() {
   if (more) {
     var left = total - show;
     more.hidden = left <= 0;
-    more.textContent = "Lihat " + left + " project lain";
+    more.textContent = "Load " + left + " more projects";
     more.onclick = function () {
       shownCount += 4;
       renderShowcase();
@@ -335,7 +335,7 @@ function openModal(pj) {
   var panel = q("#modal-panel");
   if (!m || !panel) return;
   var tags = pj.tags.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
-  panel.innerHTML = '<button class="modal-close" data-modal-close aria-label="Tutup">&times;</button>' +
+  panel.innerHTML = '<button class="modal-close" data-modal-close aria-label="Close">&times;</button>' +
     '<div class="modal-shot"><img src="' + esc(pj.shot) + '" alt="' + esc(pj.title) + ' rain"></div>' +
     '<div class="modal-body">' +
       '<p class="mono modal-meta">' + esc(pj.tech) + '</p>' +
@@ -343,7 +343,7 @@ function openModal(pj) {
       '<p class="modal-desc">' + esc(pj.desc) + '</p>' +
       '<div class="card-tags">' + tags + '</div>' +
       '<div class="modal-actions">' +
-        '<a class="btn btn-primary" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">Buka situs ' + ICONS.arrow + '</a>' +
+        '<a class="btn btn-primary" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">Visit site ' + ICONS.arrow + '</a>' +
       '</div>' +
     '</div>';
   m.classList.add("open");
@@ -481,9 +481,9 @@ function fmtTime(ts) {
   if (isNaN(d.getTime())) return "";
   var diff = (Date.now() - d.getTime()) / 1000;
   if (diff < 60) return "baru saja";
-  if (diff < 3600) return Math.floor(diff / 60) + " menit lalu";
-  if (diff < 86400) return Math.floor(diff / 3600) + " jam lalu";
-  if (diff < 2592000) return Math.floor(diff / 86400) + " hari lalu";
+  if (diff < 3600) return Math.floor(diff / 60) + (Math.floor(diff/60)===1?" minute ago":" minutes ago");
+  if (diff < 86400) return Math.floor(diff / 3600) + (Math.floor(diff/3600)===1?" hour ago":" hours ago");
+  if (diff < 2592000) return Math.floor(diff / 86400) + (Math.floor(diff/86400)===1?" day ago":" days ago");
   return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -530,7 +530,7 @@ function gbRender() {
   var items = gbState.items;
   if (count) count.textContent = items.length ? String(items.length) : "0";
   if (!items.length) {
-    list.innerHTML = '<p class="gb-empty">Belum ada pesan. Jadi yang pertama.</p>';
+    list.innerHTML = '<p class="gb-empty">No comments yet. Be the first.</p>';
     if (more) more.hidden = true;
     return;
   }
@@ -538,7 +538,7 @@ function gbRender() {
   list.innerHTML = slice.map(gbItemHTML).join("");
   if (more) {
     more.hidden = gbState.shown >= items.length;
-    more.textContent = "Muat " + Math.min(GB_VISIBLE, items.length - gbState.shown) + " pesan lagi";
+    more.textContent = "Load " + Math.min(GB_VISIBLE, items.length - gbState.shown) + " more";
     more.onclick = function () { gbState.shown += GB_VISIBLE; gbRender(); };
   }
 }
@@ -566,17 +566,17 @@ function gbLoad() {
       gbRender();
     })
     .catch(function (err) {
-      list.innerHTML = '<p class="gb-empty">Kolom komentar sedang offline. Coba lagi nanti.</p>';
+      list.innerHTML = '<p class="gb-empty">Comments are offline right now. Try again later.</p>';
       if (window.console) console.warn("guestbook:", err.message);
     });
 }
 function compressImage(file, maxSide, quality) {
   return new Promise(function (resolve, reject) {
     if (!file) { resolve(""); return; }
-    if (!/^image\//.test(file.type)) { reject(new Error("Bukan file gambar")); return; }
+    if (!/^image\//.test(file.type)) { reject(new Error("Not an image file")); return; }
     if (file.size > 8 * 1024 * 1024) { reject(new Error("Maksimal 8 MB")); return; }
     var reader = new FileReader();
-    reader.onerror = function () { reject(new Error("Gagal membaca file")); };
+    reader.onerror = function () { reject(new Error("Could not read the file")); };
     reader.onload = function () {
       var img = new Image();
       img.onerror = function () { reject(new Error("Gambar rusak")); };
@@ -634,10 +634,10 @@ function gbForm() {
     if (gbState.busy) return;
     var name = (nameEl && nameEl.value || "").trim();
     var text = (textEl && textEl.value || "").trim();
-    if (name.length < 2) { gbNote("Nama minimal 2 karakter.", "err"); if (nameEl) nameEl.focus(); return; }
-    if (text.length < 3) { gbNote("Pesan minimal 3 karakter.", "err"); if (textEl) textEl.focus(); return; }
-    if (name.length > 40) { gbNote("Nama maksimal 40 karakter.", "err"); return; }
-    if (text.length > 600) { gbNote("Pesan maksimal 600 karakter.", "err"); return; }
+    if (name.length < 2) { gbNote("Name must be at least 2 characters.", "err"); if (nameEl) nameEl.focus(); return; }
+    if (text.length < 3) { gbNote("Comment must be at least 3 characters.", "err"); if (textEl) textEl.focus(); return; }
+    if (name.length > 40) { gbNote("Name must be 40 characters or fewer.", "err"); return; }
+    if (text.length > 600) { gbNote("Comment must be 600 characters or fewer.", "err"); return; }
     gbState.busy = true;
     if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Mengirim..."; }
     var payload = {
@@ -670,14 +670,14 @@ function gbForm() {
         if (prev) { prev.innerHTML = ""; prev.classList.remove("has"); }
         var hint = q("#gb-photo-hint");
         if (hint) hint.textContent = "opsional";
-        gbNote("Pesan terkirim. Makasih!", "ok");
+        gbNote("Posted. Thanks!", "ok");
       })
       .catch(function (err) {
-        gbNote("Gagal kirim: " + err.message, "err");
+        gbNote("Failed to post: " + err.message, "err");
       })
       .then(function () {
         gbState.busy = false;
-        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Kirim"; }
+        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Post"; }
       });
   });
 }
@@ -699,9 +699,9 @@ function contactForm() {
     var name = (nameEl && nameEl.value || "").trim();
     var mail = (mailEl && mailEl.value || "").trim();
     var body = (msgEl && msgEl.value || "").trim();
-    if (!name) { say("Nama masih kosong.", "err"); if (nameEl) nameEl.focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { say("Format email belum benar.", "err"); if (mailEl) mailEl.focus(); return; }
-    if (body.length < 10) { say("Pesan minimal 10 karakter.", "err"); if (msgEl) msgEl.focus(); return; }
+    if (!name) { say("Name is still empty.", "err"); if (nameEl) nameEl.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { say("That email format is not valid.", "err"); if (mailEl) mailEl.focus(); return; }
+    if (body.length < 10) { say("Message must be at least 10 characters.", "err"); if (msgEl) msgEl.focus(); return; }
     var fd = new FormData(form);
     fd.set("form-name", "contact");
     if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Mengirim..."; }
@@ -714,11 +714,11 @@ function contactForm() {
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         form.reset();
-        say("Terkirim. Saya balas secepatnya.", "ok");
+        say("Sent. I will reply as soon as I can.", "ok");
       })
-      .catch(function (err) { say("Gagal kirim: " + err.message, "err"); })
+      .catch(function (err) { say("Failed to send: " + err.message, "err"); })
       .then(function () {
-        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Kirim pesan"; }
+        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Send message"; }
       });
   });
 }

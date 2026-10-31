@@ -39,6 +39,7 @@
   var tiltX = 0, tiltY = 0, cTiltX = 0, cTiltY = 0;
   var press = 0, tPress = 0;
   var raf = null;
+  var flipped = false;
 
   function measure() {
     stageW = stage.clientWidth || 292;
@@ -213,6 +214,12 @@
   function release(e) {
     if (!dragging) return;
     dragging = false;
+
+    // klik (bukan drag) = balik kartu. Ambang 6px sama seperti lanyard.js
+    if (moved < 6) {
+      flipped = !flipped;
+      card.style.setProperty("--flip", flipped ? "180deg" : "0deg");
+    }
     tPress = 0;
     card.classList.remove("pressed");
     stage.classList.remove("grabbing");
@@ -229,13 +236,18 @@
   stage.addEventListener("pointercancel", release);
 
   stage.addEventListener("keydown", function (e) {
-    if (e.key !== "Enter" && e.key !== " ") return;
+    if (e.key !== " " && e.key !== "Enter") return;
     e.preventDefault();
-    // keyboard pull: yank the cord down, let it spring
-    var tail = pts[N - 1];
-    tail.y += 54;
-    tail.py = tail.y - 22;
-    kick();
+    // Space = tarik tali, Enter = balik kartu (dua aksi terpisah, aksesibel)
+    if (e.key === " ") {
+      var tail = pts[N - 1];
+      tail.y += 54;
+      tail.py = tail.y - 22;
+      kick();
+      return;
+    }
+    flipped = !flipped;
+    card.style.setProperty("--flip", flipped ? "180deg" : "0deg");
   });
 
   measure();

@@ -88,8 +88,8 @@ exports.handler = async function (event) {
     const text = clean(body.text, 600);
     const photo = sanitizePhoto(body.photo);
 
-    if (name.length < 2) return json(400, { error: "Nama minimal 2 karakter." });
-    if (text.length < 3) return json(400, { error: "Pesan minimal 3 karakter." });
+    if (name.length < 2) return json(400, { error: "Name must be at least 2 characters." });
+    if (text.length < 3) return json(400, { error: "Comment must be at least 3 characters." });
 
     const items = await readAll(store);
     if (!items) return json(500, { error: "storage_read_failed" });
