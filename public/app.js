@@ -210,6 +210,13 @@ function bootSeq() {
       el.style.transitionDelay = (i * 90) + "ms";
       requestAnimationFrame(function () { el.classList.add("visible"); });
     });
+    // hero stats are NOT .reveal, so the IntersectionObserver never fires for them:
+    // kick their counters here, right after the hero becomes visible.
+    qa(".hero-anim [data-count]").forEach(function (el) {
+      if (el.dataset.done) return;
+      el.dataset.done = "1";
+      window.setTimeout(function () { countUp(el); }, 320);
+    });
     typeRole();
     observeReveals();
   }

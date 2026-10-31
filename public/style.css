@@ -280,30 +280,23 @@ body.has-cursor, body.has-cursor * { cursor: none; }
 }
 
 /* ============================================================
-   ID BADGE — lanyard strap + clip + kartu 2:3 (badge.js)
-   Interaksi: tarik = ngayun, tekan = glow, klik = balik kartu
+   ID BADGE — tali verlet yang bisa ditarik panjang (badge.js)
+   Tarik = tali mulur + kartu ngikut, lepas = tali nyentak balik
    ============================================================ */
 
 .hero-photo { display: flex; justify-content: center; align-items: flex-start; }
 
 .badge-stage {
   position: relative;
-  /* flex: whitespace text nodes tidak membentuk line-box (penyebab offset 26px) */
-  display: flex;
-  flex-direction: column;
   width: clamp(236px, 25vw, 292px);
-  padding-top: 112px;                 /* strap 96 + clip 26, kartu overlap 4px */
-  transform-origin: 50% 0;            /* pivot di titik gantung atas */
-  transform: rotate(var(--swing, 0deg));
-  will-change: transform;
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: none;            /* pointer drag penuh, jangan di-scroll browser */
   user-select: none;
   -webkit-user-select: none;
 }
 .badge-stage.grabbing { cursor: grabbing; }
 
-/* titik gantung di atas viewport */
+/* titik gantung tetap di atas */
 .badge-anchor {
   position: absolute; top: 0; left: 50%;
   width: 13px; height: 13px; border-radius: 50%;
@@ -314,46 +307,51 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   z-index: 4;
 }
 
-/* ---- strap: pita hitam bertulisan vertikal ---- */
-.badge-strap {
-  position: absolute; top: 0; left: 50%;
-  width: 30px; height: 96px;
-  transform: translateX(-50%) rotate(var(--bend, 0deg));
-  transform-origin: 50% 0;
-  background: linear-gradient(180deg, #05100b 0%, #0a1a13 38%, #071410 100%);
-  border-left: 1px solid rgba(0, 255, 156, .2);
-  border-right: 1px solid rgba(0, 255, 156, .2);
-  box-shadow: 0 0 22px rgba(0, 0, 0, .6), inset 0 0 14px rgba(0, 255, 156, .07);
-  display: flex; align-items: center; justify-content: center;
-  gap: 5px; overflow: hidden;
+/* ---- tali: pita gelap + garis serat hijau, digambar badge.js ---- */
+.badge-rope {
+  position: absolute; top: 0; left: 0;
+  overflow: visible;
+  pointer-events: none;
   z-index: 2;
 }
-.badge-strap::after {              /* garis tenun tipis di tengah pita */
-  content: ""; position: absolute; top: 0; left: 50%;
-  width: 1px; height: 100%; transform: translateX(-50%);
-  background: repeating-linear-gradient(180deg,
-    rgba(0, 255, 156, .26) 0 3px, transparent 3px 7px);
-  opacity: .5;
+.badge-rope-band {
+  fill: none;
+  stroke: #06120d;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .8));
 }
-.strap-text {
-  writing-mode: vertical-rl;
-  font-family: var(--font-mono); font-size: 7.5px; font-weight: 600;
-  letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(0, 255, 156, .72); white-space: nowrap;
+.badge-rope-line {
+  fill: none;
+  stroke: rgba(0, 255, 156, .62);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3 4;         /* serat tenun */
+  filter: drop-shadow(0 0 5px rgba(0, 255, 156, .55));
 }
-.strap-text:nth-child(2) { color: rgba(231, 239, 235, .48); }
 
-/* ---- clip logam di ujung strap ---- */
+/* ---- badan: clip + kartu, digerakkan transform oleh badge.js ---- */
+.badge-body {
+  position: absolute; top: 0; left: 0;
+  width: 100%;
+  transform-origin: 50% 0;       /* pivot di ujung tali */
+  will-change: transform;
+  z-index: 3;
+  padding-top: 9px;
+}
+
 .badge-clip {
-  position: absolute; top: 90px; left: 50%;
+  position: absolute; top: 0; left: 50%;
   width: 26px; height: 26px;
-  transform: translateX(-50%);
+  transform: translate(-50%, -38%);
   border-radius: 7px;
   background: linear-gradient(160deg, #1b2a24 0%, #0b1410 52%, #16241e 100%);
   border: 1px solid rgba(0, 255, 156, .3);
   box-shadow: 0 3px 10px rgba(0, 0, 0, .75), inset 0 1px 2px rgba(255, 255, 255, .12);
   display: grid; place-items: center;
-  z-index: 3;
+  z-index: 4;
 }
 .clip-pin {
   width: 9px; height: 9px; border-radius: 50%;
@@ -362,53 +360,36 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   box-shadow: inset 0 0 4px rgba(0, 0, 0, .9);
 }
 
-/* ---- kartu ID: rasio 2:3, rounded, foto penuh ---- */
+/* ---- kartu ID: rasio 2:3, tilt kursor, tanpa flip ---- */
 .id-card {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
-  transform-style: preserve-3d;
   transform:
     perspective(1200px)
     rotateX(var(--rotx, 0deg))
     rotateY(var(--roty, 0deg))
     translateY(calc(var(--press, 0) * 4px))
     scale(calc(1 - var(--press, 0) * 0.018));
-  transition: filter .3s;
+  transition: transform .12s var(--ease);
+  animation: badgeFade .7s var(--ease-out) both;
   z-index: 1;
-  animation: badgeIn .9s var(--ease-out) both;
 }
-@keyframes badgeIn {
-  from { opacity: 0; transform: perspective(1200px) translateY(-24px) rotateZ(-6deg); }
-}
-
-.id-flip {
-  position: absolute; inset: 0;
-  transform-style: preserve-3d;
-  transition: transform .85s cubic-bezier(.5, .06, .28, 1);
-}
-.id-card.flipped .id-flip { transform: rotateY(180deg); }
+@keyframes badgeFade { from { opacity: 0; } }
 
 .id-face {
   position: absolute; inset: 0;
   border-radius: 18px;
   overflow: hidden;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   display: flex; flex-direction: column;
+  background:
+    radial-gradient(120% 70% at 50% 26%, rgba(0, 255, 156, .2) 0%, transparent 62%),
+    linear-gradient(165deg, #0c211a 0%, #071410 46%, #040c09 100%);
   box-shadow:
     0 30px 62px -14px rgba(0, 0, 0, .92),
     0 8px 22px rgba(0, 0, 0, .55),
     0 0 0 1px rgba(0, 255, 156, .17),
     inset 0 1px 0 rgba(255, 255, 255, .09);
-}
-.id-back { transform: rotateY(180deg); }
-
-/* ---- depan: gradient hijau + foto ---- */
-.id-front {
-  background:
-    radial-gradient(120% 70% at 50% 26%, rgba(0, 255, 156, .2) 0%, transparent 62%),
-    linear-gradient(165deg, #0c211a 0%, #071410 46%, #040c09 100%);
 }
 
 .id-top {
@@ -433,7 +414,6 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   border-right: 1px solid rgba(4, 18, 12, .75);
 }
 
-/* foto: mengisi lebar kartu, menyatu ke gradient */
 .id-photo {
   flex: 1 1 auto;
   min-height: 0;
@@ -448,7 +428,7 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   object-fit: cover; object-position: 50% 28%;
   filter: saturate(1.08) contrast(1.06) brightness(1.02);
 }
-/* lapisan warna supaya foto menyatu dengan palet, bukan tempelan */
+/* vignette hijau: foto menyatu ke palet tanpa membuang warna aslinya */
 .id-photo::after {
   content: ""; position: absolute; inset: 0;
   background:
@@ -484,10 +464,7 @@ body.has-cursor, body.has-cursor * { cursor: none; }
   color: var(--faint);
 }
 .id-bars { display: flex; align-items: flex-end; gap: 1.5px; height: 12px; }
-.id-bars i {
-  display: block; width: 1.5px;
-  background: rgba(0, 255, 156, .62);
-}
+.id-bars i { display: block; width: 1.5px; background: rgba(0, 255, 156, .62); }
 .id-bars i:nth-child(1) { height: 100%; }
 .id-bars i:nth-child(2) { height: 62%; }
 .id-bars i:nth-child(3) { height: 88%; }
@@ -495,38 +472,7 @@ body.has-cursor, body.has-cursor * { cursor: none; }
 .id-bars i:nth-child(5) { height: 96%; }
 .id-bars i:nth-child(6) { height: 58%; }
 
-/* ---- belakang ---- */
-.id-back {
-  background:
-    radial-gradient(110% 70% at 50% 30%, rgba(0, 255, 156, .13) 0%, transparent 60%),
-    linear-gradient(165deg, #0a1a13 0%, #050e0a 100%);
-  align-items: center; justify-content: center;
-  text-align: center;
-}
-.id-back-inner { padding: 24px 18px; }
-.id-back-mark {
-  font-family: var(--font-head); font-size: 46px; font-weight: 700;
-  line-height: 1; color: rgba(0, 255, 156, .9);
-  text-shadow: 0 0 26px rgba(0, 255, 156, .45);
-}
-.id-back-title {
-  margin-top: 12px;
-  font-family: var(--font-head); font-size: 14px; font-weight: 600;
-  color: var(--text);
-}
-.id-back-text {
-  margin-top: 7px; font-size: 10.5px; line-height: 1.65; color: var(--muted);
-}
-.id-back-url {
-  margin-top: 16px;
-  display: inline-block; padding: 5px 13px; border-radius: 100px;
-  font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em;
-  color: var(--accent);
-  border: 1px solid rgba(0, 255, 156, .34);
-  background: rgba(0, 255, 156, .06);
-}
-
-/* ---- glare mengikuti kursor ---- */
+/* glare mengikuti kursor */
 .id-glare {
   position: absolute; inset: 0; border-radius: 18px;
   background: radial-gradient(
@@ -549,9 +495,11 @@ body.has-cursor, body.has-cursor * { cursor: none; }
 .id-card.pressed .id-glare { opacity: 1; }
 
 @media (max-width: 900px) {
-  .badge-stage { width: min(252px, 68vw); padding-top: 88px; }
-  .badge-strap { height: 80px; }
-  .badge-clip { top: 74px; }
+  .badge-stage { width: min(252px, 68vw); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .id-card { animation: none; transition: none; }
 }
 
 
