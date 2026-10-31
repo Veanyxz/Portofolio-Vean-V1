@@ -43,7 +43,7 @@ function sanitizePhoto(src) {
 
 async function readAll(store) {
   try {
-    const data = await store.get(KEY, { type: "json" });
+    const data = await store.get(KEY, { type: "json", consistency: "strong" });
     if (Array.isArray(data)) return data;
     if (data && Array.isArray(data.items)) return data.items;
     return [];
@@ -63,7 +63,8 @@ exports.handler = async function (event) {
   try {
     // bind Blobs to this invocation (siteID/token from the function event context)
     connectLambda(event);
-    store = getStore(STORE);
+    // strong: default eventual read returned a stale list right after a write
+    store = getStore({ name: STORE, consistency: "strong" });
   } catch (e) {
     return json(500, { error: "storage_unavailable", detail: String(e && e.message || e) });
   }
