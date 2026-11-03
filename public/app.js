@@ -14,7 +14,7 @@ const ROLES = [
 const PROJECTS = [
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
     domain: "uploader.vean.my.id", shot: "shots/uploader.jpg",
-    desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly — media stored permanently, everything else on high-speed direct upload.",
+    desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly. Media is stored permanently; everything else goes through high-speed direct upload.",
     tags: ["file-sharing", "drag & drop", "web tool"] },
   { title: "Vean Shortlink", tech: "JavaScript", url: "https://short.vean.my.id",
     domain: "short.vean.my.id", shot: "shots/shortlink.jpg",
@@ -22,19 +22,19 @@ const PROJECTS = [
     tags: ["url shortener", "privacy", "web tool"] },
   { title: "Audio Tune", tech: "JavaScript · Web Audio", url: "https://audio.vean.my.id",
     domain: "audio.vean.my.id", shot: "shots/audio.jpg",
-    desc: "A fully browser-based audio editor — trim, tune speed and pitch, apply effects, and import from YouTube, then export files ready to upload. No install, no server.",
+    desc: "A fully browser-based audio editor. Trim, tune speed and pitch, apply effects, import from YouTube, then export files ready to upload. No install, no server.",
     tags: ["audio editor", "web audio api", "creator tool"] },
   { title: "CodeBin", tech: "JavaScript", url: "https://codebin.vean.my.id/#/",
     domain: "codebin.vean.my.id", shot: "shots/codebin.jpg",
-    desc: "A zero-server code snippet sharer. Paste code, pick a language, and get a permanent link with real syntax highlighting. The payload is compressed with DEFLATE and encoded into the URL fragment — nothing is stored, no request ever leaves your machine.",
+    desc: "A zero-server code snippet sharer. Paste code, pick a language, and get a permanent link with real syntax highlighting. The payload is compressed with DEFLATE and encoded into the URL fragment, so nothing is stored and no request ever leaves your machine.",
     tags: ["code sharing", "zero-server", "web tool"] },
   { title: "Ve Retail", tech: "Express · libsql/Turso · Vanilla JS", url: "https://retail.vean.my.id",
     domain: "retail.vean.my.id", shot: "shots/retail.jpg",
-    desc: "A full retail point-of-sale and back-office suite for Indonesian shops — touchscreen POS with barcode scan and retail/grosir/reseller pricing, multi-branch inventory, purchase orders and payables, receivables, promotions, vouchers, bundling, cash & bank, double-entry accounting, shift and attendance tracking, plus role-gated access for admin, supervisor, cashier and warehouse.",
+    desc: "A full retail point-of-sale and back-office suite for Indonesian shops: touchscreen POS with barcode scan and retail/grosir/reseller pricing, multi-branch inventory, purchase orders and payables, receivables, promotions, vouchers, bundling, cash & bank, double-entry accounting, shift and attendance tracking, plus role-gated access for admin, supervisor, cashier and warehouse.",
     tags: ["pos", "erp", "multi-branch", "accounting"] },
   { title: "DigiPasar", tech: "JavaScript", url: "https://market.vean.my.id",
     domain: "market.vean.my.id", shot: "shots/digipasar.jpg",
-    desc: "An Indonesian digital-goods marketplace — game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
+    desc: "An Indonesian digital-goods marketplace: game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
     tags: ["marketplace", "digital goods", "e-commerce"] },
 ];
 
@@ -503,7 +503,7 @@ function contactForm() {
         body,
       });
       if (!res.ok) throw new Error("bad status " + res.status);
-      note.textContent = "> Message sent — I'll get back to you shortly.";
+      note.textContent = "> Message sent. I'll get back to you shortly.";
       form.reset();
     } catch (err) {
       note.style.color = "var(--danger)";
