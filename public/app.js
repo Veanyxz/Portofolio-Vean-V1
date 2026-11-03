@@ -1,5 +1,10 @@
 "use strict";
 
+/* ============================================================
+   DATA — EDIT DI SINI
+   Ganti proyek, deskripsi, stack, role sesuai asli.
+   ============================================================ */
+
 const ROLES = [
   "Full-Stack Developer",
   "Security Researcher",
@@ -7,588 +12,656 @@ const ROLES = [
   "System Builder",
 ];
 
+// Proyek showcase — hasil kerjaan asli, bukan repo GitHub.
+// Tambah proyek baru: copy satu blok { } di bawah, isi title/url/domain/shot/tech/desc/tags.
+// `shot` = path screenshot di public/shots/ (jpg 1280x720).
 const PROJECTS = [
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
     domain: "uploader.vean.my.id", shot: "shots/uploader.jpg",
-    desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly - media stored permanently, everything else on high-speed direct upload.",
+    desc: "A no-sign-up file-sharing service for any file type. Drag, drop, or paste and get a shareable link instantly — media stored permanently, everything else on high-speed direct upload.",
     tags: ["file-sharing", "drag & drop", "web tool"] },
   { title: "Vean Shortlink", tech: "JavaScript", url: "https://short.vean.my.id",
     domain: "short.vean.my.id", shot: "shots/shortlink.jpg",
     desc: "A privacy-first URL shortener. Create clean, brandable links with a custom or random slug, permanent or temporary expiry, and no tracking or sign-up.",
     tags: ["url shortener", "privacy", "web tool"] },
-  { title: "Audio Tune", tech: "JavaScript / Web Audio", url: "https://audio.vean.my.id",
+  { title: "Audio Tune", tech: "JavaScript · Web Audio", url: "https://audio.vean.my.id",
     domain: "audio.vean.my.id", shot: "shots/audio.jpg",
-    desc: "A fully browser-based audio editor - trim, tune speed and pitch, apply effects, and import from YouTube, then export files ready to upload. No install, no server.",
+    desc: "A fully browser-based audio editor — trim, tune speed and pitch, apply effects, and import from YouTube, then export files ready to upload. No install, no server.",
     tags: ["audio editor", "web audio api", "creator tool"] },
   { title: "CodeBin", tech: "JavaScript", url: "https://codebin.vean.my.id/#/",
     domain: "codebin.vean.my.id", shot: "shots/codebin.jpg",
-    desc: "A zero-server code snippet sharer. Paste code, pick a language, and get a permanent link with real syntax highlighting. The payload is compressed with DEFLATE and encoded into the URL fragment - nothing is stored, no request ever leaves your machine.",
+    desc: "A zero-server code snippet sharer. Paste code, pick a language, and get a permanent link with real syntax highlighting. The payload is compressed with DEFLATE and encoded into the URL fragment — nothing is stored, no request ever leaves your machine.",
     tags: ["code sharing", "zero-server", "web tool"] },
-  { title: "Ve Retail", tech: "Express / libsql-Turso / Vanilla JS", url: "https://retail.vean.my.id",
+  { title: "Ve Retail", tech: "Express · libsql/Turso · Vanilla JS", url: "https://retail.vean.my.id",
     domain: "retail.vean.my.id", shot: "shots/retail.jpg",
-    desc: "A full retail point-of-sale and back-office suite for Indonesian shops - touchscreen POS with barcode scan and retail/grosir/reseller pricing, multi-branch inventory, purchase orders and payables, receivables, promotions, vouchers, bundling, cash and bank, double-entry accounting, shift and attendance tracking, plus role-gated access for admin, supervisor, cashier and warehouse.",
+    desc: "A full retail point-of-sale and back-office suite for Indonesian shops — touchscreen POS with barcode scan and retail/grosir/reseller pricing, multi-branch inventory, purchase orders and payables, receivables, promotions, vouchers, bundling, cash & bank, double-entry accounting, shift and attendance tracking, plus role-gated access for admin, supervisor, cashier and warehouse.",
     tags: ["pos", "erp", "multi-branch", "accounting"] },
   { title: "DigiPasar", tech: "JavaScript", url: "https://market.vean.my.id",
     domain: "market.vean.my.id", shot: "shots/digipasar.jpg",
-    desc: "An Indonesian digital-goods marketplace - game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
+    desc: "An Indonesian digital-goods marketplace — game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
     tags: ["marketplace", "digital goods", "e-commerce"] },
 ];
 
+const STACK = [
+  { name: "Frontend", items: ["JavaScript", "TypeScript", "HTML / CSS", "React", "Next.js", "Tailwind CSS", "Sass", "Vite"] },
+  { name: "Backend", items: ["Node.js", "Express", "PHP", "Python", "MySQL", "PostgreSQL", "MongoDB", "Redis"] },
+  { name: "Mobile", items: ["Kotlin", "Android", "Jetpack Compose", "Flutter", "Swift", "SwiftUI", "React Native", "Firebase"] },
+  { name: "Apps", items: ["Electron", "Tauri", ".NET", "C#", "WPF", "Qt", "PyQt", "pywebview"] },
+];
+
+const PROJECTS_VISIBLE = 6;
+
+/* ============================================================
+   Helpers
+   ============================================================ */
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+
+/* ============================================================
+   Preloader (boot terminal)
+   ============================================================ */
+const BOOT_LINES = [
+  { t: "> booting vean.my.id", cls: "cmd" },
+  { t: "> loading modules", cls: "cmd" },
+  { t: "  ok", cls: "ok" },
+  { t: "> establishing secure channel", cls: "cmd" },
+  { t: "  ok", cls: "ok" },
+  { t: "> mounting interface", cls: "cmd" },
+  { t: "  ok", cls: "ok" },
+  { t: "> VEAN ready", cls: "ok" },
+];
+
+function runBoot() {
+  const linesEl = $("#boot-lines");
+  const barEl = $("#boot-bar-fill");
+  const statusEl = $("#boot-status");
+  if (!linesEl) return finishBoot();
+
+  const total = BOOT_LINES.length;
+  let i = 0;
+  const step = () => {
+    if (i >= total) { setTimeout(finishBoot, 260); return; }
+    const ln = BOOT_LINES[i];
+    const el = document.createElement("div");
+    el.className = ln.cls;
+    el.textContent = ln.t;
+    linesEl.appendChild(el);
+    i++;
+    const pct = Math.round((i / total) * 100);
+    barEl.style.width = pct + "%";
+    statusEl.textContent = pct + "%";
+    setTimeout(step, 150 + Math.random() * 120);
+  };
+  step();
+}
+
+function finishBoot() {
+  $("#preloader").classList.add("done");
+  // hero entrance (staggered)
+  $$(".hero-anim").forEach((el, i) => {
+    el.style.transitionDelay = i * 90 + "ms";
+    requestAnimationFrame(() => el.classList.add("visible"));
+  });
+  typeRole();
+  observeReveals();
+}
+
+/* ============================================================
+   Typing role
+   ============================================================ */
+function typeRole() {
+  const el = $("#type-role");
+  if (!el) return;
+  let ri = 0, ci = 0, deleting = false;
+  const tick = () => {
+    const word = ROLES[ri];
+    ci += deleting ? -1 : 1;
+    el.textContent = word.slice(0, ci);
+    let delay = deleting ? 38 : 70;
+    if (!deleting && ci === word.length) { delay = 1700; deleting = true; }
+    else if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % ROLES.length; delay = 350; }
+    setTimeout(tick, delay);
+  };
+  tick();
+}
+
+/* ============================================================
+   Custom cursor
+   ============================================================ */
+function customCursor() {
+  const dot = $("#cursor-dot");
+  const ring = $("#cursor-ring");
+  if (!dot || !ring) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  document.body.classList.add("has-cursor");
+  dot.style.opacity = "1";
+  ring.style.opacity = "1";
+
+  let mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0;
+
+  window.addEventListener("mousemove", (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  });
+
+  // spring-physics trailing ring (smoother than linear lerp)
+  (function loop() {
+    vx += (mx - rx) * 0.16;
+    vy += (my - ry) * 0.16;
+    vx *= 0.78;
+    vy *= 0.78;
+    rx += vx;
+    ry += vy;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  })();
+
+  // click pulse
+  window.addEventListener("mousedown", () => ring.classList.add("down"));
+  window.addEventListener("mouseup", () => ring.classList.remove("down"));
+
+  // hover grow — delegated, works for dynamic (modal) elements too
+  const hoverables = "a, button, .card, .btn, .compose input, .compose textarea, [data-modal-close]";
+  document.addEventListener("mouseover", (e) => {
+    ring.classList.toggle("active", !!e.target.closest(hoverables));
+  });
+}
+
+function scrollProgress() {
+  const bar = $("#scroll-progress");
+  if (!bar) return;
+  const update = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+}
+
+function magnetic() {
+  if (!window.matchMedia("(hover: hover)").matches) return;
+  $$(".btn").forEach((btn) => {
+    btn.addEventListener("mousemove", (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2;
+      const y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px)`;
+    });
+    btn.addEventListener("mouseleave", () => {
+      btn.style.transform = "";
+    });
+  });
+}
+
+/* ============================================================
+   Nav
+   ============================================================ */
 function nav() {
   const navEl = $("#nav");
+  const links = $$(".nav-link");
   const burger = $("#nav-burger");
   const linksWrap = $("#nav-links");
-  const links = $$(".nav-link");
   const sections = $$("section[id]");
-  if (!navEl) return;
+
   const onScroll = () => {
     navEl.classList.toggle("scrolled", window.scrollY > 24);
     let current = sections[0] && sections[0].id;
     for (const s of sections) {
-      if (window.scrollY >= s.offsetTop - 170) current = s.id;
+      if (window.scrollY >= s.offsetTop - 160) current = s.id;
     }
     links.forEach((l) => l.classList.toggle("active", l.getAttribute("href") === "#" + current));
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
-  if (burger && linksWrap) {
-    burger.addEventListener("click", () => {
-      const open = linksWrap.classList.toggle("open");
-      burger.classList.toggle("open", open);
-      burger.setAttribute("aria-expanded", open);
-    });
-    links.forEach((l) => l.addEventListener("click", () => {
+
+  burger.addEventListener("click", () => {
+    const open = linksWrap.classList.toggle("open");
+    burger.classList.toggle("open", open);
+    burger.setAttribute("aria-expanded", open);
+  });
+  $$(".nav-link").forEach((l) => {
+    l.addEventListener("click", () => {
       linksWrap.classList.remove("open");
       burger.classList.remove("open");
       burger.setAttribute("aria-expanded", "false");
-    }));
-  }
+    });
+  });
 }
 
+/* ============================================================
+   Reveal (IntersectionObserver) + counters
+   ============================================================ */
 let revealObserver;
+
 function makeObserver() {
   revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
       const el = e.target;
       el.classList.add("visible");
+      if (el.style.transitionDelay) {
+        setTimeout(() => { el.style.transitionDelay = ""; }, 1100);
+      }
       const num = el.querySelector("[data-count]");
-      if (num && !num.dataset.done) { num.dataset.done = "1"; countUp(num); }
+      if (num) countUp(num);
       revealObserver.unobserve(el);
     });
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
 }
+
 function observeReveals() {
-  if (!revealObserver) makeObserver();
   $$(".reveal:not(.visible)").forEach((el) => revealObserver.observe(el));
 }
+
 function countUp(el) {
   const target = parseInt(el.dataset.count, 10) || 0;
-  const dur = 1300, t0 = performance.now();
+  const dur = 1400;
+  const t0 = performance.now();
   const frame = (t) => {
-    const pr = Math.min((t - t0) / dur, 1);
-    const eased = 1 - Math.pow(1 - pr, 3);
+    const p = Math.min((t - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
     el.textContent = Math.round(target * eased);
-    if (pr < 1) requestAnimationFrame(frame);
+    if (p < 1) requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
 }
 
 /* ============================================================
-   HANGING CARDS - pendulum physics + press feedback
-   Kartu bergantung di hook, berayun mengikuti kursor/klik,
-   dan bisa dipencet (skala turun + glow).
+   Showcase render
    ============================================================ */
+function renderShowcase() {
+  const grid = $("#showcase-grid");
+  const moreBtn = $("#load-more");
+  if (!grid) return;
+
+  let shown = PROJECTS_VISIBLE;
+  const render = () => {
+    grid.innerHTML = "";
+    PROJECTS.slice(0, shown).forEach((p, i) => {
+      const card = document.createElement("article");
+      card.className = "card reveal";
+      card.dataset.idx = i;
+      card.style.transitionDelay = (i % 3) * 90 + "ms";
+      card.innerHTML = `
+        <div class="card-preview">
+          <div class="preview-bar">
+            <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
+            <span class="preview-url mono">${p.domain}</span>
+          </div>
+          <div class="preview-shot"><img src="${p.shot}" alt="${p.title} preview" loading="lazy" /></div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-tech">${p.tech}</span>
+            <span class="card-index">${String(i + 1).padStart(2, "0")}/${PROJECTS.length}</span>
+          </div>
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+          <a class="card-link" href="${p.url}" target="_blank" rel="noopener">
+            Visit Project
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>`;
+      grid.appendChild(card);
+    });
+    const remaining = PROJECTS.length - shown;
+    if (remaining > 0) {
+      moreBtn.hidden = false;
+      moreBtn.textContent = "Load Additional Projects (" + remaining + " more)";
+    } else {
+      moreBtn.hidden = true;
+    }
+    observeReveals();
+  };
+
+  moreBtn.addEventListener("click", () => { shown = Math.min(shown + 6, PROJECTS.length); render(); });
+  render();
+
+  // sync hero counter dengan jumlah project sebenarnya
+  const counter = $("#live-projects-count");
+  if (counter) counter.setAttribute("data-count", PROJECTS.length);
+}
 
 /* ============================================================
-   LANYARD — mount the rope physics on every showcase card.
-   Interaction (drag / press / click) lives in lanyard.js.
+   Stack render
    ============================================================ */
-
-var lanyards = [];
-
-function tilt() {
-  lanyards = [];
-  if (!window.Lanyard) return;
-
-  qa(".hanger").forEach(function (wrap) {
-    var idx = parseInt(wrap.getAttribute("data-idx"), 10);
-    var inst = window.Lanyard.mount(wrap, {
-      onClick: function () {
-        if (!isNaN(idx) && PROJECTS[idx]) openModal(PROJECTS[idx]);
-      }
-    });
-    if (inst) lanyards.push(inst);
-
-    // kursor tilt 3D tetap: set --rx / --ry / --mx / --my
-    var card = wrap.querySelector(".card");
-    if (!card) return;
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-    wrap.addEventListener("pointermove", function (e) {
-      if (wrap.classList.contains("swinging")) return;
-      var r = card.getBoundingClientRect();
-      var px = (e.clientX - r.left) / r.width;
-      var py = (e.clientY - r.top) / r.height;
-      card.style.setProperty("--ry", ((px - 0.5) * 2 * 6).toFixed(2) + "deg");
-      card.style.setProperty("--rx", (-(py - 0.5) * 2 * 5).toFixed(2) + "deg");
-      card.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
-      card.style.setProperty("--my", (py * 100).toFixed(1) + "%");
-    });
-    wrap.addEventListener("pointerleave", function () {
-      card.style.setProperty("--ry", "0deg");
-      card.style.setProperty("--rx", "0deg");
-    });
-  });
-}
-
-const STACK = [
-  { name: "Frontend", items: ["JavaScript", "TypeScript", "HTML / CSS", "React", "Next.js", "Tailwind", "Sass", "Vite"] },
-  { name: "Backend", items: ["Node.js", "Express", "PHP", "Python", "MySQL", "PostgreSQL", "MongoDB", "Redis"] },
-  { name: "Mobile", items: ["Kotlin", "Android", "Jetpack Compose", "Flutter", "Swift", "SwiftUI", "React Native", "Firebase"] },
-  { name: "Apps", items: ["Electron", "Tauri", ".NET", "C#", "WPF", "Qt", "PyQt", "pywebview"] },
-];
-
-const SOCIALS = [
-  { name: "GitHub", handle: "@Veanyxz", url: "https://github.com/Veanyxz", icon: "github" },
-  { name: "Email", handle: "admin@vean.my.id", url: "mailto:admin@vean.my.id", icon: "mail" },
-  { name: "Website", handle: "vean.my.id", url: "https://vean.my.id", icon: "globe" },
-];
-
-var LT = String.fromCharCode(60);
-var GT = String.fromCharCode(62);
-
-function svg(inner, vb) {
-  return LT + 'svg viewBox="' + (vb || '0 0 24 24') + '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"' + GT + inner + LT + '/svg' + GT;
-}
-
-const ICONS = {
-  github: svg(LT + 'path fill="currentColor" stroke="none" d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"' + GT),
-  mail: svg(LT + 'rect width="20" height="16" x="2" y="4" rx="2"' + GT + LT + 'path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"' + GT),
-  globe: svg(LT + 'circle cx="12" cy="12" r="10"' + GT + LT + 'path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"' + GT),
-  arrow: svg(LT + 'path d="M7 17 17 7M9 7h8v8"' + GT),
-  send: svg(LT + 'path d="m22 2-7 20-4-9-9-4Z"' + GT + LT + 'path d="M22 2 11 13"' + GT),
-  user: svg(LT + 'path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"' + GT + LT + 'circle cx="12" cy="7" r="4"' + GT),
-  at: svg(LT + 'circle cx="12" cy="12" r="4"' + GT + LT + 'path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"' + GT),
-  chat: svg(LT + 'path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"' + GT),
-  image: svg(LT + 'rect width="18" height="18" x="3" y="3" rx="2"' + GT + LT + 'circle cx="9" cy="9" r="2"' + GT + LT + 'path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"' + GT),
-};
-
-const GB_ENDPOINT = "/.netlify/functions/guestbook";
-const GB_VISIBLE = 6;
-
-
-function q(sel, root) { return (root || document).querySelector(sel); }
-function qa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-function esc(v) {
-  return String(v == null ? "" : v).replace(/[&<>"']/g, function (ch) {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
-  });
-}
-
-function bootSeq() {
-  var linesEl = q("#boot-lines");
-  var barEl = q("#boot-bar-fill");
-  var statusEl = q("#boot-status");
-  var pre = q("#preloader");
-  var seq = [
-    ["cmd", "> mounting runtime"],
-    ["cmd", "> loading modules"],
-    ["ok", "  ok"],
-    ["cmd", "> secure channel"],
-    ["ok", "  ok"],
-    ["cmd", "> rendering interface"],
-    ["ok", "  ok"],
-    ["ok", "> VEAN online"]
-  ];
-  function finish() {
-    if (pre) {
-      pre.classList.add("done");
-      window.setTimeout(function () { pre.style.display = "none"; }, 780);
-    }
-    qa(".hero-anim").forEach(function (el, i) {
-      el.style.transitionDelay = (i * 90) + "ms";
-      requestAnimationFrame(function () { el.classList.add("visible"); });
-    });
-    // hero stats are NOT .reveal, so the IntersectionObserver never fires for them:
-    // kick their counters here, right after the hero becomes visible.
-    qa(".hero-anim [data-count]").forEach(function (el) {
-      if (el.dataset.done) return;
-      el.dataset.done = "1";
-      window.setTimeout(function () { countUp(el); }, 320);
-    });
-    typeRole();
-    observeReveals();
-  }
-  if (!linesEl || !barEl) { finish(); return; }
-  var i = 0;
-  function step() {
-    if (i >= seq.length) { window.setTimeout(finish, 200); return; }
-    var row = seq[i];
-    var d = document.createElement("div");
-    d.className = row[0];
-    d.textContent = row[1];
-    linesEl.appendChild(d);
-    i++;
-    var pct = Math.round(i / seq.length * 100);
-    barEl.style.width = pct + "%";
-    if (statusEl) statusEl.textContent = pct + "%";
-    window.setTimeout(step, 95 + Math.random() * 80);
-  }
-  step();
-}
-
-function typeRole() {
-  var el = q("#type-role");
-  if (!el) return;
-  var ri = 0, ci = 0, del = false;
-  function tick() {
-    var w = ROLES[ri];
-    ci += del ? -1 : 1;
-    el.textContent = w.slice(0, ci);
-    var d = del ? 36 : 68;
-    if (!del && ci === w.length) { d = 1650; del = true; }
-    else if (del && ci === 0) { del = false; ri = (ri + 1) % ROLES.length; d = 300; }
-    window.setTimeout(tick, d);
-  }
-  tick();
-}
-
-var shownCount = 0;
-
-function renderShowcase() {
-  var wrap = q("#showcase-grid");
-  if (!wrap) return;
-  var more = q("#load-more");
-  var initial = PROJECTS.length;
-  var total = PROJECTS.length;
-  var show = Math.min(total, initial + shownCount);
-  wrap.innerHTML = PROJECTS.slice(0, show).map(cardHTML).join("");
-  observeReveals();
-  tilt();
-  if (more) {
-    var left = total - show;
-    more.hidden = left <= 0;
-    more.textContent = "Load " + left + " more projects";
-    more.onclick = function () {
-      shownCount += 4;
-      renderShowcase();
-    };
-  }
-}
-
 function renderStack() {
-  var wrap = q("#stack-grid");
-  if (!wrap) return;
-  wrap.innerHTML = STACK.map(function (g) {
-    return '<article class="stack-card glass-card reveal">' +
-      '<h3>' + esc(g.name) + '</h3>' +
-      '<div class="chip-row">' + g.items.map(function (it) {
-        return '<span class="chip">' + esc(it) + '</span>';
-      }).join("") + '</div>' +
-      '</article>';
-  }).join("");
+  const grid = $("#stack-grid");
+  if (!grid) return;
+  grid.innerHTML = STACK.map((s, i) => `
+    <div class="stack-card reveal" style="transition-delay: ${i * 90}ms">
+      <h3>${s.name}</h3>
+      <ul>${s.items.map((it) => `<li>${it}</li>`).join("")}</ul>
+    </div>`).join("");
+  observeReveals();
 }
 
-function renderSocials() {
-  var wrap = q("#socials");
-  if (!wrap) return;
-  wrap.innerHTML = SOCIALS.map(function (s) {
-    return '<a class="social" href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' +
-      '<span class="social-ico">' + (ICONS[s.icon] || ICONS.globe) + '</span>' +
-      '<span class="social-meta"><b>' + esc(s.name) + '</b><i>' + esc(s.handle) + '</i></span>' +
-      '<span class="social-arrow">' + ICONS.arrow + '</span>' +
-      '</a>';
-  }).join("");
-}
-function cardHTML(pj, idx) {
-  var tags = pj.tags.map(function (t) {
-    return '<span class="tag">' + esc(t) + '</span>';
-  }).join("");
-  var n = String(idx + 1).padStart(2, "0");
-  return '<div class="hanger reveal" data-idx="' + idx + '">' +
-    '<article class="card glass-card">' +
-      '<span class="card-glare"></span>' +
-      '<div class="card-preview">' +
-        '<img src="' + esc(pj.shot) + '" alt="' + esc(pj.title) + ' screenshot" loading="lazy" decoding="async">' +
-        '<span class="card-index mono">' + n + '</span>' +
-      '</div>' +
-      '<div class="card-body">' +
-        '<div class="card-top">' +
-          '<h3>' + esc(pj.title) + '</h3>' +
-          '<span class="card-tech mono">' + esc(pj.tech) + '</span>' +
-        '</div>' +
-        '<p class="card-desc">' + esc(pj.desc) + '</p>' +
-        '<div class="card-tags">' + tags + '</div>' +
-        '<div class="card-foot">' +
-          '<a class="card-link" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">' +
-            '<span class="mono">' + esc(pj.domain) + '</span>' + ICONS.arrow +
-          '</a>' +
-        '</div>' +
-      '</div>' +
-    '</article>' +
-  '</div>';
+/* ============================================================
+   Init
+   ============================================================ */
+function smoothScroll() {
+  $$("[data-scroll]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      const href = el.getAttribute("href");
+      if (!href || href.charAt(0) !== "#") return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", href);
+    });
+  });
 }
 
-function openModal(pj) {
-  var m = q("#modal");
-  var panel = q("#modal-panel");
-  if (!m || !panel) return;
-  var tags = pj.tags.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
-  panel.innerHTML = '<button class="modal-close" data-modal-close aria-label="Close">&times;</button>' +
-    '<div class="modal-shot"><img src="' + esc(pj.shot) + '" alt="' + esc(pj.title) + ' rain"></div>' +
-    '<div class="modal-body">' +
-      '<p class="mono modal-meta">' + esc(pj.tech) + '</p>' +
-      '<h3 class="modal-title">' + esc(pj.title) + '</h3>' +
-      '<p class="modal-desc">' + esc(pj.desc) + '</p>' +
-      '<div class="card-tags">' + tags + '</div>' +
-      '<div class="modal-actions">' +
-        '<a class="btn btn-primary" href="' + esc(pj.url) + '" target="_blank" rel="noopener noreferrer">Visit site ' + ICONS.arrow + '</a>' +
-      '</div>' +
-    '</div>';
-  m.classList.add("open");
-  document.body.style.overflow = "hidden";
+function contactForm() {
+  const form = $("#compose-form");
+  const note = $("#compose-note");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("#compose-send");
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    note.textContent = "";
+    note.style.color = "";
+    try {
+      const body = new URLSearchParams(new FormData(form)).toString();
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+      if (!res.ok) throw new Error("bad status " + res.status);
+      note.textContent = "> Message sent — I'll get back to you shortly.";
+      form.reset();
+    } catch (err) {
+      note.style.color = "#ff7b7b";
+      note.textContent = "> Something went wrong. Please try again, or email me directly at admin@vean.my.id.";
+    }
+    btn.disabled = false;
+    btn.textContent = orig;
+  });
+}
+
+/* ============================================================
+   Modal / lightbox
+   ============================================================ */
+function openModal(html) {
+  const modal = $("#modal");
+  const panel = $("#modal-panel");
+  if (!modal || !panel) return;
+  panel.innerHTML = html;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  // cursor ring hover on injected interactive elements
+  const ring = $("#cursor-ring");
+  if (ring) {
+    panel.querySelectorAll("a, button").forEach((el) => {
+      el.addEventListener("mouseenter", () => ring.classList.add("active"));
+      el.addEventListener("mouseleave", () => ring.classList.remove("active"));
+    });
+  }
 }
 
 function closeModal() {
-  var m = q("#modal");
-  if (!m) return;
-  m.classList.remove("open");
-  document.body.style.overflow = "";
+  const modal = $("#modal");
+  if (!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
 }
 
-function modalWiring() {
-  document.addEventListener("click", function (e) {
-    var t = e.target;
-    if (t.closest && t.closest("[data-modal-close]")) { closeModal(); return; }
-    if (t.id === "modal") { closeModal(); return; }
-    // card clicks are handled by lanyard.js (drag-aware), not here
-  });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") closeModal();
-  });
+function openProjectModal(p) {
+  openModal(`
+    <div class="modal-project">
+      <div class="modal-shot"><img src="${p.shot}" alt="${p.title}" /></div>
+      <div class="modal-body">
+        <span class="card-tech">${p.tech}</span>
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+        <div class="modal-actions">
+          <a class="btn btn-primary" href="${p.url}" target="_blank" rel="noopener">Visit Project ↗</a>
+        </div>
+      </div>
+    </div>`);
 }
-function $(sel, root) { return q(sel, root); }
-function $$(sel, root) { return qa(sel, root); }
 
-function cursor() {
-  var dot = q("#cursor-dot");
-  var ring = q("#cursor-ring");
-  if (!dot || !ring) return;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    dot.style.display = "none"; ring.style.display = "none"; return;
+function initModal() {
+  const modal = $("#modal");
+  if (!modal) return;
+
+  $$("[data-modal-close]").forEach((el) => el.addEventListener("click", closeModal));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+  });
+
+  // profile photo lightbox — the hero is a WebGL card now, so the modal target
+  // is the stage itself; card3d.js owns drag/flip on the same element.
+  const photo = $("#card3d-stage");
+  if (photo) {
+    const activate = () => openModal(`
+      <div class="modal-photo">
+        <img src="me.jpg" alt="Vean" />
+        <div class="modal-meta">
+          <span class="modal-title">Vean</span>
+          <span class="mono dim">Full-Stack Developer · Security Researcher</span>
+        </div>
+      </div>`);
+    // only the keyboard path opens the lightbox; pointer input belongs to the card
+    photo.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); activate(); }
+    });
   }
-  var mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0;
-  window.addEventListener("mousemove", function (e) {
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = "translate(" + mx + "px," + my + "px) translate(-50%,-50%)";
-  }, { passive: true });
-  function loop() {
-    vx = (vx + (mx - rx) * 0.18) * 0.76;
-    vy = (vy + (my - ry) * 0.18) * 0.76;
-    rx += vx; ry += vy;
-    ring.style.transform = "translate(" + rx + "px," + ry + "px) translate(-50%,-50%)";
-    requestAnimationFrame(loop);
+
+  // project card lightbox (delegation)
+  const grid = $("#showcase-grid");
+  if (grid) {
+    grid.addEventListener("click", (e) => {
+      if (e.target.closest(".card-link")) return; // let the link open the site
+      const card = e.target.closest(".card");
+      if (!card || card.dataset.idx == null) return;
+      openProjectModal(PROJECTS[+card.dataset.idx]);
+    });
   }
-  loop();
-  var hov = "a,button,.card,input,textarea,label,.social,.chip";
-  document.addEventListener("mouseover", function (e) {
-    if (!e.target.closest) return;
-    ring.classList.toggle("active", !!e.target.closest(hov));
-  });
-  window.addEventListener("mousedown", function () { ring.classList.add("down"); });
-  window.addEventListener("mouseup", function () { ring.classList.remove("down"); });
 }
 
-function progress() {
-  var bar = q("#scroll-progress");
-  if (!bar) return;
-  function upd() {
-    var h = document.documentElement;
-    var max = h.scrollHeight - h.clientHeight;
-    bar.style.width = (max > 0 ? (h.scrollTop / max * 100) : 0) + "%";
-  }
-  window.addEventListener("scroll", upd, { passive: true });
-  window.addEventListener("resize", upd);
-  upd();
+/* ===== Music toggle + ring loop ===== */
+let musicAudio = null;
+let musicPlaying = false;
+
+function setRingActive(on) {
+  const frame = document.querySelector('.card3d-stage');
+  if (frame) frame.classList.toggle('music-on', on);
 }
 
-function smoothScroll() {
-  document.addEventListener("click", function (e) {
-    var a = e.target.closest && e.target.closest('a[href^="#"]');
-    if (!a) return;
-    var id = a.getAttribute("href");
-    if (!id || id === "#") return;
-    var el = document.querySelector(id);
-    if (!el) return;
-    e.preventDefault();
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-}
-function particles() {
-  var cv = q("#particles");
-  if (!cv) return;
-  var ctx = cv.getContext("2d");
-  var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var W = 0, H = 0, pts = [];
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function resize() {
-    W = cv.clientWidth; H = cv.clientHeight;
-    cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var n = Math.min(90, Math.max(28, Math.round(W * H / 22000)));
-    pts = [];
-    for (var i = 0; i < n; i++) {
-      pts.push({ x: Math.random() * W, y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
-        r: Math.random() * 1.5 + 0.5 });
+function initMusic() {
+  musicAudio = $('#bg-music');
+  const toggle = $('#music-toggle');
+  if (!musicAudio || !toggle) return;
+
+  document.body.classList.add('has-music');
+
+  function updateUI() {
+    toggle.classList.toggle('paused', !musicPlaying);
+  }
+
+  function tryPlay() {
+    musicAudio.play().then(() => {
+      musicPlaying = true;
+      setRingActive(true);
+      updateUI();
+    }).catch((e) => {
+      console.warn('Music autoplay failed:', e);
+      updateUI();
+    });
+  }
+
+  tryPlay();
+
+  toggle.addEventListener('click', () => {
+    if (!musicPlaying) {
+      tryPlay();
+    } else {
+      musicAudio.pause();
+      musicPlaying = false;
+      setRingActive(false);
+      updateUI();
     }
-  }
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    for (var i = 0; i < pts.length; i++) {
-      var p1 = pts[i];
-      p1.x += p1.vx; p1.y += p1.vy;
-      if (p1.x < 0 || p1.x > W) p1.vx *= -1;
-      if (p1.y < 0 || p1.y > H) p1.vy *= -1;
-      ctx.beginPath();
-      ctx.arc(p1.x, p1.y, p1.r, 0, 6.2832);
-      ctx.fillStyle = "rgba(124,170,255,0.55)";
-      ctx.fill();
-      for (var j = i + 1; j < pts.length; j++) {
-        var p2 = pts[j];
-        var dx = p1.x - p2.x, dy = p1.y - p2.y;
-        var d2 = dx * dx + dy * dy;
-        if (d2 < 15000) {
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = "rgba(124,170,255," + (0.16 * (1 - d2 / 15000)).toFixed(3) + ")";
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
-        }
-      }
-    }
-    if (!reduce) requestAnimationFrame(draw);
-  }
-  resize();
-  window.addEventListener("resize", resize);
-  draw();
+  });
 }
-var gbState = { items: [], shown: GB_VISIBLE, busy: false };
+
+function init() {
+  // hide hero behind opaque preloader (avoid flash)
+  $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta, .hero-photo").forEach((el) => el.classList.add("hero-anim"));
+
+  makeObserver();
+  renderShowcase();
+  renderStack();
+  customCursor();
+  scrollProgress();
+  magnetic();
+  nav();
+  smoothScroll();
+  contactForm();
+  initModal();
+  initMusic();
+  gbInit();
+  runBoot();
+}
+
+/* ============================================================
+   Guestbook — Netlify Function + Blobs, no external DB
+   ============================================================ */
+const GB_ENDPOINT = "/.netlify/functions/guestbook";
+const GB_VISIBLE = 6;
+const gbState = { items: [], shown: GB_VISIBLE, busy: false };
+
+function escHtml(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, (ch) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+  ));
+}
 
 function fmtTime(ts) {
-  var d = new Date(ts);
+  const d = new Date(ts);
   if (isNaN(d.getTime())) return "";
-  var diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 60) return "baru saja";
-  if (diff < 3600) return Math.floor(diff / 60) + (Math.floor(diff/60)===1?" minute ago":" minutes ago");
-  if (diff < 86400) return Math.floor(diff / 3600) + (Math.floor(diff/3600)===1?" hour ago":" hours ago");
-  if (diff < 2592000) return Math.floor(diff / 86400) + (Math.floor(diff/86400)===1?" day ago":" days ago");
-  return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return "just now";
+  if (diff < 3600) { const m = Math.floor(diff / 60); return m + (m === 1 ? " minute ago" : " minutes ago"); }
+  if (diff < 86400) { const h = Math.floor(diff / 3600); return h + (h === 1 ? " hour ago" : " hours ago"); }
+  if (diff < 2592000) { const dd = Math.floor(diff / 86400); return dd + (dd === 1 ? " day ago" : " days ago"); }
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function initials(name) {
-  var raw = String(name || "?").trim();
-  var parts = raw.length ? raw.split(" ") : ["?"];
-  var first = parts[0] || "?";
-  var last = parts.length > 1 ? parts[parts.length - 1] : "";
-  var out = (first.charAt(0) || "?") + (last.charAt(0) || "");
-  return out.toUpperCase();
+  const parts = String(name || "?").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  const a = parts[0].charAt(0) || "?";
+  const b = parts.length > 1 ? parts[parts.length - 1].charAt(0) : "";
+  return (a + b).toUpperCase();
+}
+
+function gbNote(msg, kind) {
+  const n = $("#gb-note");
+  if (!n) return;
+  n.textContent = msg || "";
+  n.className = "gb-note mono" + (kind ? " " + kind : "");
+  if (msg) {
+    clearTimeout(gbNote._t);
+    gbNote._t = setTimeout(() => { n.textContent = ""; n.className = "gb-note mono"; }, 6000);
+  }
 }
 
 function gbItemHTML(it) {
-  var avatar = it.photo
-    ? '<img class="gb-avatar" src="' + esc(it.photo) + '" alt="' + esc(it.name) + '" loading="lazy">'
-    : '<span class="gb-avatar gb-initials">' + esc(initials(it.name)) + '</span>';
-  return '<article class="gb-item glass-card">' +
-    avatar +
-    '<div class="gb-main">' +
-      '<div class="gb-meta">' +
-        '<b class="gb-name">' + esc(it.name) + '</b>' +
-        '<time class="gb-time mono">' + esc(fmtTime(it.ts)) + '</time>' +
-      '</div>' +
-      '<p class="gb-text">' + esc(it.text) + '</p>' +
-    '</div>' +
-  '</article>';
+  const avatar = it.photo
+    ? `<img class="gb-avatar" src="${escHtml(it.photo)}" alt="${escHtml(it.name)}" loading="lazy" />`
+    : `<span class="gb-avatar">${escHtml(initials(it.name))}</span>`;
+  return `<article class="gb-item">
+    ${avatar}
+    <div class="gb-main">
+      <div class="gb-meta">
+        <b class="gb-name">${escHtml(it.name)}</b>
+        <time class="gb-time">${escHtml(fmtTime(it.ts))}</time>
+      </div>
+      <p class="gb-text">${escHtml(it.text)}</p>
+    </div>
+  </article>`;
 }
 
-function gbSkeleton(n) {
-  var out = "";
-  for (var i = 0; i < n; i++) {
-    out += '<article class="gb-item glass-card gb-skel">' +
-      '<span class="gb-avatar"></span>' +
-      '<div class="gb-main"><div class="gb-meta"><b class="gb-name">&nbsp;</b></div>' +
-      '<p class="gb-text">&nbsp;</p></div></article>';
-  }
-  return out;
-}
 function gbRender() {
-  var list = q("#gb-list");
-  var more = q("#gb-more");
-  var count = q("#gb-count");
+  const list = $("#gb-list");
+  const more = $("#gb-more");
+  const count = $("#gb-count");
   if (!list) return;
-  var items = gbState.items;
-  if (count) count.textContent = items.length ? String(items.length) : "0";
+  const items = gbState.items;
+  if (count) count.textContent = String(items.length);
   if (!items.length) {
     list.innerHTML = '<p class="gb-empty">No comments yet. Be the first.</p>';
     if (more) more.hidden = true;
     return;
   }
-  var slice = items.slice(0, gbState.shown);
-  list.innerHTML = slice.map(gbItemHTML).join("");
+  list.innerHTML = items.slice(0, gbState.shown).map(gbItemHTML).join("");
   if (more) {
-    more.hidden = gbState.shown >= items.length;
-    more.textContent = "Load " + Math.min(GB_VISIBLE, items.length - gbState.shown) + " more";
-    more.onclick = function () { gbState.shown += GB_VISIBLE; gbRender(); };
+    const left = items.length - gbState.shown;
+    more.hidden = left <= 0;
+    // clamp: without this, a short list produced "Load -5 more"
+    more.textContent = `Load ${Math.min(GB_VISIBLE, Math.max(0, left))} more`;
+    more.onclick = () => { gbState.shown += GB_VISIBLE; gbRender(); };
   }
 }
 
-function gbNote(msg, kind) {
-  var n = q("#gb-note");
-  if (!n) return;
-  n.textContent = msg || "";
-  n.className = "gb-note mono" + (kind ? " " + kind : "");
-  if (msg) {
-    window.clearTimeout(gbNote._t);
-    gbNote._t = window.setTimeout(function () { n.textContent = ""; n.className = "gb-note mono"; }, 6000);
+function gbSkeleton(n) {
+  let out = "";
+  for (let i = 0; i < n; i++) {
+    out += '<article class="gb-item"><span class="gb-skel" style="width:38px;height:38px;border-radius:50%;flex:none"></span>' +
+      '<div class="gb-main"><div class="gb-meta"><b class="gb-name">&nbsp;</b></div>' +
+      '<p class="gb-text">&nbsp;</p></div></article>';
   }
+  return out;
 }
 
-function gbLoad() {
-  var list = q("#gb-list");
+async function gbLoad() {
+  const list = $("#gb-list");
   if (!list) return;
   list.innerHTML = gbSkeleton(3);
-  fetch(GB_ENDPOINT, { headers: { Accept: "application/json" } })
-    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-    .then(function (data) {
-      gbState.items = Array.isArray(data.items) ? data.items : [];
-      gbState.shown = GB_VISIBLE;
-      gbRender();
-    })
-    .catch(function (err) {
-      list.innerHTML = '<p class="gb-empty">Comments are offline right now. Try again later.</p>';
-      if (window.console) console.warn("guestbook:", err.message);
-    });
+  try {
+    const res = await fetch(GB_ENDPOINT, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    gbState.items = Array.isArray(data.items) ? data.items : [];
+    gbState.shown = GB_VISIBLE;
+    gbRender();
+  } catch (err) {
+    list.innerHTML = '<p class="gb-empty">Comments are offline right now. Try again later.</p>';
+    console.warn("guestbook:", err.message);
+  }
 }
+
+/* shrink a picked photo before it travels: keeps the blob small */
 function compressImage(file, maxSide, quality) {
-  return new Promise(function (resolve, reject) {
-    if (!file) { resolve(""); return; }
-    if (!/^image\//.test(file.type)) { reject(new Error("Not an image file")); return; }
-    if (file.size > 8 * 1024 * 1024) { reject(new Error("Maksimal 8 MB")); return; }
-    var reader = new FileReader();
-    reader.onerror = function () { reject(new Error("Could not read the file")); };
-    reader.onload = function () {
-      var img = new Image();
-      img.onerror = function () { reject(new Error("Gambar rusak")); };
-      img.onload = function () {
-        var w = img.naturalWidth, h = img.naturalHeight;
-        var scale = Math.min(1, maxSide / Math.max(w, h));
-        var cw = Math.max(1, Math.round(w * scale));
-        var ch = Math.max(1, Math.round(h * scale));
-        var cv = document.createElement("canvas");
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve("");
+    if (!/^image\//.test(file.type)) return reject(new Error("not an image"));
+    if (file.size > 8 * 1024 * 1024) return reject(new Error("file is over 8MB"));
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("could not read the file"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("image is corrupt"));
+      img.onload = () => {
+        const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        const cw = Math.max(1, Math.round(img.naturalWidth * scale));
+        const ch = Math.max(1, Math.round(img.naturalHeight * scale));
+        const cv = document.createElement("canvas");
         cv.width = cw; cv.height = ch;
-        var cx = cv.getContext("2d");
-        cx.drawImage(img, 0, 0, cw, ch);
+        cv.getContext("2d").drawImage(img, 0, 0, cw, ch);
         resolve(cv.toDataURL("image/jpeg", quality));
       };
       img.src = reader.result;
@@ -598,190 +671,88 @@ function compressImage(file, maxSide, quality) {
 }
 
 function gbPhoto() {
-  var input = q("#gb-photo");
-  var prev = q("#gb-photo-preview");
-  var hint = q("#gb-photo-hint");
+  const input = $("#gb-photo");
+  const prev = $("#gb-photo-preview");
+  const hint = $("#gb-photo-hint");
   if (!input) return;
-  input.addEventListener("change", function () {
-    var f = input.files && input.files[0];
+  input.addEventListener("change", async () => {
+    const f = input.files && input.files[0];
     if (!f) {
-      if (prev) { prev.innerHTML = ""; prev.classList.remove("has"); }
-      if (hint) hint.textContent = "opsional";
+      if (prev) { prev.hidden = true; prev.removeAttribute("src"); }
+      if (hint) hint.textContent = "max 5MB";
+      input.dataset.dataUrl = "";
       return;
     }
     if (hint) hint.textContent = f.name;
-    compressImage(f, 220, 0.72).then(function (dataUrl) {
-      if (!prev) return;
-      prev.innerHTML = '<img src="' + dataUrl + '" alt="preview">';
-      prev.classList.add("has");
+    try {
+      const dataUrl = await compressImage(f, 240, 0.74);
       input.dataset.dataUrl = dataUrl;
-    }).catch(function (err) {
+      if (prev) { prev.src = dataUrl; prev.hidden = false; }
+    } catch (err) {
       gbNote(err.message, "err");
       input.value = "";
-      if (hint) hint.textContent = "opsional";
-    });
-  });
-}
-function gbForm() {
-  var form = q("#gb-form");
-  if (!form) return;
-  var btn = q("#gb-submit");
-  var nameEl = q("#gb-name");
-  var textEl = q("#gb-text");
-  var photoEl = q("#gb-photo");
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (gbState.busy) return;
-    var name = (nameEl && nameEl.value || "").trim();
-    var text = (textEl && textEl.value || "").trim();
-    if (name.length < 2) { gbNote("Name must be at least 2 characters.", "err"); if (nameEl) nameEl.focus(); return; }
-    if (text.length < 3) { gbNote("Comment must be at least 3 characters.", "err"); if (textEl) textEl.focus(); return; }
-    if (name.length > 40) { gbNote("Name must be 40 characters or fewer.", "err"); return; }
-    if (text.length > 600) { gbNote("Comment must be 600 characters or fewer.", "err"); return; }
-    gbState.busy = true;
-    if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Mengirim..."; }
-    var payload = {
-      name: name,
-      text: text,
-      photo: (photoEl && photoEl.dataset.dataUrl) || ""
-    };
-    fetch(GB_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload)
-    })
-      .then(function (r) {
-        return r.json().catch(function () { return {}; }).then(function (j) {
-          if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
-          return j;
-        });
-      })
-      .then(function (j) {
-        if (j && j.item) {
-          gbState.items.unshift(j.item);
-          gbState.shown = Math.max(gbState.shown, GB_VISIBLE);
-          gbRender();
-        } else {
-          gbLoad();
-        }
-        form.reset();
-        if (photoEl) { delete photoEl.dataset.dataUrl; }
-        var prev = q("#gb-photo-preview");
-        if (prev) { prev.innerHTML = ""; prev.classList.remove("has"); }
-        var hint = q("#gb-photo-hint");
-        if (hint) hint.textContent = "opsional";
-        gbNote("Posted. Thanks!", "ok");
-      })
-      .catch(function (err) {
-        gbNote("Failed to post: " + err.message, "err");
-      })
-      .then(function () {
-        gbState.busy = false;
-        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Post"; }
-      });
-  });
-}
-function contactForm() {
-  var form = q("#contact-form");
-  if (!form) return;
-  var btn = q("#cf-submit");
-  var note = q("#cf-note");
-  function say(msg, kind) {
-    if (!note) return;
-    note.textContent = msg || "";
-    note.className = "cf-note mono" + (kind ? " " + kind : "");
-  }
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var nameEl = q("#cf-name");
-    var mailEl = q("#cf-email");
-    var msgEl = q("#cf-message");
-    var name = (nameEl && nameEl.value || "").trim();
-    var mail = (mailEl && mailEl.value || "").trim();
-    var body = (msgEl && msgEl.value || "").trim();
-    if (!name) { say("Name is still empty.", "err"); if (nameEl) nameEl.focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { say("That email format is not valid.", "err"); if (mailEl) mailEl.focus(); return; }
-    if (body.length < 10) { say("Message must be at least 10 characters.", "err"); if (msgEl) msgEl.focus(); return; }
-    var fd = new FormData(form);
-    fd.set("form-name", "contact");
-    if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = "Mengirim..."; }
-    say("Mengirim...");
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(fd).toString()
-    })
-      .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        form.reset();
-        say("Sent. I will reply as soon as I can.", "ok");
-      })
-      .catch(function (err) { say("Failed to send: " + err.message, "err"); })
-      .then(function () {
-        if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || "Send message"; }
-      });
+      if (hint) hint.textContent = "max 5MB";
+    }
   });
 }
 
-function musicToggle() {
-  var au = q("#bg-music");
-  var btn = q("#music-toggle");
-  if (!au || !btn) return;
-  au.volume = 0;
-  var on = false;
-  function fade(to, ms) {
-    var from = au.volume;
-    var t0 = performance.now();
-    function step(t) {
-      var pr = Math.min((t - t0) / ms, 1);
-      au.volume = Math.max(0, Math.min(1, from + (to - from) * pr));
-      if (pr < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-  btn.addEventListener("click", function () {
-    if (on) {
-      fade(0, 320);
-      window.setTimeout(function () { au.pause(); }, 340);
-      btn.classList.remove("playing");
-      btn.setAttribute("aria-pressed", "false");
-      on = false;
-    } else {
-      au.play().then(function () {
-        fade(0.28, 700);
-        btn.classList.add("playing");
-        btn.setAttribute("aria-pressed", "true");
-        on = true;
-      }).catch(function () {
-        btn.style.display = "none";
+function gbForm() {
+  const form = $("#gb-form");
+  if (!form) return;
+  const btn = $("#gb-submit");
+  const nameEl = $("#gb-name");
+  const textEl = $("#gb-text");
+  const photoEl = $("#gb-photo");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (gbState.busy) return;
+    const name = (nameEl.value || "").trim();
+    const text = (textEl.value || "").trim();
+    if (name.length < 2) { gbNote("Name needs at least 2 characters.", "err"); nameEl.focus(); return; }
+    if (text.length < 3) { gbNote("Comment needs at least 3 characters.", "err"); textEl.focus(); return; }
+
+    gbState.busy = true;
+    const label = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+    try {
+      const res = await fetch(GB_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name, text, photo: (photoEl && photoEl.dataset.dataUrl) || "" }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "HTTP " + res.status);
+      if (data.item) {
+        gbState.items.unshift(data.item);
+        gbState.shown = Math.max(gbState.shown, GB_VISIBLE);
+        gbRender();
+      } else {
+        gbLoad();
+      }
+      form.reset();
+      const prev = $("#gb-photo-preview");
+      if (prev) { prev.hidden = true; prev.removeAttribute("src"); }
+      if (photoEl) photoEl.dataset.dataUrl = "";
+      const hint = $("#gb-photo-hint");
+      if (hint) hint.textContent = "max 5MB";
+      gbNote("Posted. Thanks!", "ok");
+    } catch (err) {
+      gbNote("Failed to post: " + err.message, "err");
+    } finally {
+      gbState.busy = false;
+      btn.disabled = false;
+      btn.innerHTML = label;
     }
   });
 }
-function init() {
-  renderShowcase();
-  renderStack();
-  renderSocials();
-  makeObserver();
-  nav();
-  cursor();
-  progress();
-  smoothScroll();
-  particles();
-  modalWiring();
-  tilt();
-  contactForm();
+
+function gbInit() {
+  if (!$("#gb-form")) return;
   gbPhoto();
   gbForm();
   gbLoad();
-  musicToggle();
-  var y = q("#year");
-  if (y) y.textContent = String(new Date().getFullYear());
-  bootSeq();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
+document.addEventListener("DOMContentLoaded", init);

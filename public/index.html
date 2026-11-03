@@ -3,73 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vean — Full-Stack Developer &amp; Security Researcher</title>
-  <meta name="description" content="Vean — full-stack developer and security researcher. I build resilient systems, automation, and digital products that feel alive." />
-  <meta name="theme-color" content="#00ff9c" />
-  <meta name="color-scheme" content="dark" />
-  <link rel="canonical" href="https://vean.my.id/" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Vean" />
-  <meta property="og:url" content="https://vean.my.id/" />
-  <meta property="og:title" content="Vean — Full-Stack Developer &amp; Security Researcher" />
-  <meta property="og:description" content="I build resilient systems, automation, and digital products that feel alive." />
-  <meta property="og:image" content="https://vean.my.id/og.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Vean — hanging ID card with profile photo" />
-  <meta property="og:locale" content="en_US" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Vean — Full-Stack Developer &amp; Security Researcher" />
-  <meta name="twitter:description" content="I build resilient systems, automation, and digital products that feel alive." />
-  <meta name="twitter:image" content="https://vean.my.id/og.jpg" />
+  <title>Vean Portofolio</title>
+  <meta name="description" content="Vean — Full-Stack Developer & Security Researcher. Building resilient systems, automation, and fluid digital products." />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- ===== ambient layers ===== -->
-  <div class="aurora" aria-hidden="true">
-    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
-  </div>
-  <canvas class="particles" id="particles" aria-hidden="true"></canvas>
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="noise" aria-hidden="true"></div>
-  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-
   <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
 
-  <!-- ===== boot preloader ===== -->
+  <!-- Boot preloader -->
   <div class="preloader" id="preloader" aria-hidden="true">
     <div class="boot">
-      <div class="boot-brand">VEAN<span class="accent">▌</span></div>
       <div class="boot-lines" id="boot-lines"></div>
       <div class="boot-bar"><div class="boot-bar-fill" id="boot-bar-fill"></div></div>
-      <div class="boot-status mono" id="boot-status">0%</div>
+      <div class="boot-status" id="boot-status">0%</div>
     </div>
   </div>
 
-  <!-- ===== nav ===== -->
   <nav class="nav" id="nav">
-    <a class="nav-logo" href="#home" data-scroll>
+    <a class="nav-logo" href="#overview" data-scroll>
       <img src="logo.png" alt="" class="nav-logo-mark" aria-hidden="true" />
       <span class="nav-word">VEAN<span class="nav-cursor">▌</span></span>
     </a>
     <div class="nav-links" id="nav-links">
-      <a href="#home" data-scroll class="nav-link active">Home</a>
+      <a href="#overview" data-scroll class="nav-link active">Overview</a>
       <a href="#showcase" data-scroll class="nav-link">Showcase</a>
       <a href="#stack" data-scroll class="nav-link">Stack</a>
       <a href="#about" data-scroll class="nav-link">About</a>
       <a href="#contact" data-scroll class="nav-link">Contact</a>
+      <a href="#guestbook" data-scroll class="nav-link">Guestbook</a>
     </div>
     <div class="nav-right">
-      <span class="nav-status"><span class="dot"></span>open to work</span>
+      <span class="nav-status"><span class="dot"></span>online</span>
       <button class="nav-burger" id="nav-burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -77,256 +51,229 @@
   </nav>
 
   <main>
-    <!-- ============ HERO ============ -->
-    <section class="hero" id="home">
+    <!-- HERO / OVERVIEW -->
+    <section class="hero" id="overview">
       <div class="hero-inner">
         <div class="hero-grid">
           <div class="hero-content">
-            <p class="eyebrow hero-anim"><span class="pulse-dot"></span>available for select projects</p>
-
-            <h1 class="hero-title hero-anim">
-              Turning ideas into
-              <span class="grad-text">dependable software.</span>
+            <p class="eyebrow"><span class="mono">&gt;</span> system // online</p>
+            <h1 class="hero-title">
+              <span class="hello">Building resilient systems &amp; fluid digital products.</span>
             </h1>
-
-            <div class="hero-name hero-anim">
+            <div class="hero-name">
               <span class="mono dim">— I'm</span>
               <span class="glitch" data-text="Vean">Vean</span>
             </div>
-
-            <p class="hero-role hero-anim">
-              <span class="mono dim">role:</span>
+            <p class="hero-role">
+              <span class="mono dim">Primary Role: </span>
               <span class="type-role" id="type-role"></span><span class="caret">▌</span>
             </p>
-
-            <p class="hero-desc hero-anim">
-              Full-stack developer &amp; security researcher based in Indonesia. I build tools,
-              automation and systems that <em>just work</em> — reliable backends paired with
-              interfaces that feel alive.
+            <p class="hero-desc">
+              Full-stack developer based in Indonesia. I build tools, automation, and systems that
+              <em>just work</em> — from reliable backends to clean, intuitive interfaces.
             </p>
-
-            <div class="hero-cta hero-anim">
-              <a class="btn btn-primary" href="#showcase" data-scroll>
-                <span>View Showcase</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </a>
+            <div class="hero-cta">
+              <a class="btn btn-primary" href="#showcase" data-scroll>Explore Showcase</a>
               <a class="btn btn-ghost" href="https://github.com/Veanyxz" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
-                <span>GitHub</span>
+                GitHub
               </a>
             </div>
-
-            <div class="hero-stats hero-anim">
-              <div class="stat">
-                <div class="stat-num grad-text" data-count="7">0</div>
+            <div class="hero-stats">
+              <div class="stat reveal">
+                <div class="stat-num" id="live-projects-count" data-count="4">0</div>
                 <div class="stat-label">Live Projects</div>
               </div>
-              <div class="stat">
-                <div class="stat-num grad-text" data-count="31">0</div>
+              <div class="stat reveal">
+                <div class="stat-num" data-count="31">0</div>
                 <div class="stat-label">Repositories</div>
               </div>
-              <div class="stat">
-                <div class="stat-num grad-text" data-count="58">0</div>
-                <div class="stat-label">Followers</div>
+              <div class="stat reveal">
+                <div class="stat-num" data-count="58">0</div>
+                <div class="stat-label">GitHub Followers</div>
               </div>
             </div>
           </div>
 
-          <div class="hero-photo hero-anim"><div class="badge-stage" id="badge" role="button" tabindex="0" aria-label="Hanging ID card — drag the strap, click to flip"><div class="badge-anchor" aria-hidden="true"></div><svg class="badge-rope" aria-hidden="true"><defs><linearGradient id="strapGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#040b07"/><stop offset=".18" stop-color="#14261c"/><stop offset=".42" stop-color="#1f3629"/><stop offset=".66" stop-color="#15271d"/><stop offset=".88" stop-color="#0a1710"/><stop offset="1" stop-color="#040b07"/></linearGradient></defs><path class="badge-rope-edge"></path><path class="badge-rope-fill"></path><path class="badge-rope-weave"></path><path class="badge-rope-centerline" id="ropeCenter"></path><text class="badge-rope-text"><textPath href="#ropeCenter" xlink:href="#ropeCenter" startOffset="6">VEAN ✦ ID CARD</textPath></text></svg><div class="badge-body"><div class="badge-clip" aria-hidden="true"><span class="clip-pin"></span></div><div class="id-card"><div class="id-face id-front"><div class="id-top"><span class="id-org">VEAN.MY.ID</span><span class="id-chip" aria-hidden="true"></span></div><div class="id-photo"><img src="me.jpg" alt="Vean" width="300" height="300" loading="eager" draggable="false" /></div><div class="id-name">Vean</div><div class="id-role">full-stack · security · automation</div><div class="id-foot"><span class="id-num">ID · 50613879</span><span class="id-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div class="id-glare" aria-hidden="true"></div></div><div class="id-face id-back"><div class="id-back-top"><span class="mono">IF FOUND &middot; admin@vean.my.id</span></div><div class="id-back-body"><p class="id-back-quote">&ldquo;Ship it, then make it better.&rdquo;</p><p class="id-back-tagline">Web apps, automation and security tooling &mdash; built to survive real traffic, not just a demo.</p></div><ul class="id-back-list"><li><span class="mono dim">mail</span><a href="mailto:admin@vean.my.id">admin@vean.my.id</a></li><li><span class="mono dim">github</span><a href="https://github.com/Veanyxz" target="_blank" rel="noopener">github.com/Veanyxz</a></li><li><span class="mono dim">web</span><a href="https://vean.my.id">vean.my.id</a></li><li><span class="mono dim">loc</span><span>Surabaya, ID</span></li></ul><div class="id-sign" aria-hidden="true"><span>Vean</span></div><div class="id-barcode" aria-hidden="true"></div></div></div></div></div></div></div>
+          <div class="hero-photo">
+            <div class="card3d-stage" id="card3d-stage" role="button" tabindex="0"
+                 aria-label="Vean ID card — drag to spin, click to flip">
+              <canvas id="card3d-canvas"></canvas>
+              <div class="card3d-fallback" aria-hidden="true">
+                <img src="me.jpg" alt="Vean" width="520" height="780" loading="eager" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero-scroll" aria-hidden="true"><span></span>scroll</div>
     </section>
 
-    <!-- ============ MARQUEE ============ -->
+    <!-- MARQUEE -->
     <div class="marquee" aria-hidden="true">
       <div class="marquee-track">
         <div class="marquee-group">
-          <span>full-stack development</span><i>◆</i>
-          <span>security research</span><i>◆</i>
-          <span>automation</span><i>◆</i>
-          <span>open to work</span><i>◆</i>
-          <span>surabaya · id</span><i>◆</i>
+          <span>full-stack development</span><i>//</i>
+          <span>security research</span><i>//</i>
+          <span>automation</span><i>//</i>
+          <span>open to work</span><i>//</i>
+          <span>surabaya · id</span><i>//</i>
         </div>
         <div class="marquee-group">
-          <span>full-stack development</span><i>◆</i>
-          <span>security research</span><i>◆</i>
-          <span>automation</span><i>◆</i>
-          <span>open to work</span><i>◆</i>
-          <span>surabaya · id</span><i>◆</i>
+          <span>full-stack development</span><i>//</i>
+          <span>security research</span><i>//</i>
+          <span>automation</span><i>//</i>
+          <span>open to work</span><i>//</i>
+          <span>surabaya · id</span><i>//</i>
         </div>
       </div>
     </div>
 
-    <!-- ============ SHOWCASE ============ -->
+    <!-- SHOWCASE -->
     <section class="section" id="showcase">
       <div class="section-head reveal">
-        <p class="eyebrow"><span class="mono">&gt;</span> selected_work</p>
-        <h2>Projects that are <span class="grad-text">already live</span>.</h2>
-        <p class="section-sub">Not mockups &mdash; every one of these is live and in use right now.</p>
+        <p class="eyebrow"><span class="mono">&gt;</span> project_showcase</p>
+        <h2>Selected Projects</h2>
+        <p class="section-sub">A curated selection of tools and projects I've built and shipped.</p>
       </div>
       <div class="showcase-grid" id="showcase-grid"></div>
       <div class="showcase-more">
-        <button class="btn btn-ghost" id="load-more" hidden>Load more projects</button>
+        <button class="btn btn-ghost" id="load-more" hidden>Load Additional Projects</button>
       </div>
     </section>
 
-    <!-- ============ STACK ============ -->
+    <!-- STACK -->
     <section class="section" id="stack">
       <div class="section-head reveal">
         <p class="eyebrow"><span class="mono">&gt;</span> engineering_stack</p>
-        <h2>The tools I <span class="grad-text">use every day</span>.</h2>
-        <p class="section-sub">Not a logo wall &mdash; these are what I actually ship with.</p>
+        <h2>Engineering with clarity &amp; visual excellence.</h2>
+        <p class="section-sub">A full-stack practice focused on quality — reliable backend logic paired with refined, aesthetic interfaces.</p>
       </div>
       <div class="stack-grid" id="stack-grid"></div>
     </section>
 
-    <!-- ============ ABOUT ============ -->
+    <!-- ABOUT -->
     <section class="section" id="about">
-      <div class="about-solo">
-        <p class="eyebrow reveal"><span class="mono">&gt;</span> about</p>
+      <div class="about-grid">
+        <div class="section-head reveal">
+          <p class="eyebrow"><span class="mono">&gt;</span> about</p>
+          <h2>Turning ideas into dependable software.</h2>
+        </div>
         <div class="about-body reveal">
           <p>
-            I'm <strong>Vean</strong> &mdash; a full-stack developer and security researcher based in Indonesia.
-            I build web applications, automation tooling, and bots; and I spend most of my time understanding
-            how systems work from the inside: how they run, where they break, and how to put them back together.
+            I'm <strong>Vean</strong> — a full-stack developer and security researcher based in Indonesia.
+            I build web applications, automation tools, and bots, and I spend my time understanding how
+            systems work beneath the surface: how they function, where their weaknesses lie, and how
+            to improve them.
           </p>
           <p>
-            The principle is simple: <em>ship it, then make it better.</em> I write code with intent &mdash;
-            products that are genuinely useful and pleasant to use.
+            My approach is simple: <em>ship it, then make it better.</em> I write code with intent —
+            creating products that are genuinely useful and a pleasure to use.
           </p>
           <ul class="about-facts">
             <li><span class="mono dim">location</span><span>Indonesia</span></li>
             <li><span class="mono dim">city</span><span>Surabaya</span></li>
-            <li><span class="mono dim">focus</span><span>Web &middot; Security &middot; Automation</span></li>
-            <li><span class="mono dim">status</span><span class="ok-text">open to work</span></li>
+            <li><span class="mono dim">focus</span><span>Web · Security · Automation</span></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- ============ CONTACT ============ -->
+    <!-- CONTACT -->
     <section class="section contact" id="contact">
-      <div class="section-head reveal center-head">
-        <p class="eyebrow"><span class="mono">&gt;</span> contact</p>
-        <h2>Got something to <span class="grad-text">talk about?</span></h2>
-        <p class="section-sub">Just send a message &mdash; I read every one.</p>
-      </div>
+      <div class="contact-inner reveal">
+        <p class="eyebrow center"><span class="mono">&gt;</span> contact</p>
+        <h2>Have a project in mind?</h2>
+        <p class="section-sub">Let's build something world-class.</p>
 
-      <div class="contact-grid">
-        <!-- form -->
-        <div class="glass-panel contact-form-panel reveal">
-          <div class="panel-head">
-            <h3 class="grad-text">Get in touch</h3>
-            <p class="panel-sub">Fill in the form below &mdash; I usually reply within 24 hours.</p>
+        <form class='compose' id='compose-form' method='POST' name='contact'>
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hp" aria-hidden="true"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+          <div class="compose-bar">
+            <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
+            <span class="compose-title mono">compose — admin@vean.my.id</span>
           </div>
 
-          <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contact-form" class="cf">
-            <input type="hidden" name="form-name" value="contact" />
-            <p class="hp" aria-hidden="true"><label>Don't fill this out: <input name="bot-field" /></label></p>
-
-            <div class="field">
-              <svg class="field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div class="compose-body">
+            <div class="compose-row">
+              <label class="mono" for="cf-name">from</label>
               <input id="cf-name" name="name" type="text" placeholder="Your name" autocomplete="name" required />
             </div>
-
-            <div class="field">
-              <svg class="field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              <input id="cf-email" name="email" type="email" placeholder="Your email" autocomplete="email" required />
+            <div class="compose-row">
+              <label class="mono" for="cf-email">reply-to</label>
+              <input id="cf-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
             </div>
-
-            <div class="field">
-              <svg class="field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <textarea id="cf-message" name="message" placeholder="Your message" rows="5" required></textarea>
+            <div class="compose-row">
+              <label class="mono" for="cf-subject">subject</label>
+              <input id="cf-subject" name="subject" type="text" placeholder="Message subject" />
             </div>
-
-            <button type="submit" class="btn btn-primary btn-block" id="cf-submit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              <span>Send Message</span>
-            </button>
-            <p class="form-note mono" id="cf-note" role="status"></p>
-          </form>
-        </div>
-
-        <!-- find me -->
-        <div class="contact-side">
-          <div class="glass-panel findme-panel reveal">
-            <p class="mono dim findme-kicker">FIND ME</p>
-            <h3 class="findme-title">Let's connect<br /><span class="grad-text">on the internet</span></h3>
-            <ul class="socials" id="socials"></ul>
+            <div class="compose-row grow">
+              <label class="mono" for="cf-message">message</label>
+              <textarea id="cf-message" name="message" placeholder="Write your message..." required></textarea>
+            </div>
           </div>
 
-          <div class="glass-panel status-panel reveal">
-            <div class="status-row">
-              <span class="status-dot"></span>
-              <div>
-                <strong>Available for projects</strong>
-                <p class="mono dim">response &lt; 24 hours &middot; WIB (UTC+7)</p>
-              </div>
-            </div>
-            <a class="mail-link mono" href="mailto:admin@vean.my.id">admin@vean.my.id</a>
+          <div class="compose-foot">
+            <span class="mono dim">to: admin@vean.my.id</span>
+            <button type="submit" class="btn btn-primary" id="compose-send">Send</button>
           </div>
-        </div>
+        </form>
+        <p class="compose-note mono" id="compose-note"></p>
       </div>
     </section>
 
-    <!-- ============ GUESTBOOK ============ -->
+    <!-- GUESTBOOK -->
     <section class="section guestbook" id="guestbook">
       <div class="section-head reveal">
         <p class="eyebrow"><span class="mono">&gt;</span> guestbook</p>
-        <h2>Comments <span class="grad-text">(</span><span id="gb-count" class="grad-text">0</span><span class="grad-text">)</span></h2>
-        <p class="section-sub">Leave a trace &mdash; critique, a suggestion, or just say hi. Everything shows up here.</p>
+        <h2>Leave a trace <span class="grad-text">(<span id="gb-count">0</span>)</span></h2>
+        <p class="section-sub">Critique, a suggestion, or just say hi — everything shows up here.</p>
       </div>
 
       <div class="gb-grid">
-        <!-- form -->
-        <div class="glass-panel gb-form-panel reveal">
-          <form id="gb-form" class="cf" novalidate>
-            <div class="field">
-              <svg class="field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <input id="gb-name" name="name" type="text" placeholder="Name" maxlength="40" required />
+        <div class="gb-form-panel reveal">
+          <form id="gb-form" class="gb-form" novalidate>
+            <div class="gb-field">
+              <label class="mono" for="gb-name">name</label>
+              <input id="gb-name" name="name" type="text" placeholder="Your name" maxlength="40" autocomplete="name" required />
             </div>
-
-            <div class="field">
-              <svg class="field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <textarea id="gb-text" name="text" placeholder="Comment" maxlength="300" rows="4" required></textarea>
+            <div class="gb-field">
+              <label class="mono" for="gb-text">comment</label>
+              <textarea id="gb-text" name="text" placeholder="Write something..." maxlength="600" rows="4" required></textarea>
             </div>
-
             <div class="gb-photo-row">
               <label class="file-btn" for="gb-photo">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v13"/></svg>
-                Profile photo (optional)
+                Photo (optional)
               </label>
               <input id="gb-photo" type="file" accept="image/*" hidden />
-              <span class="gb-photo-hint mono dim" id="gb-photo-hint">Max 5MB</span>
+              <span class="gb-photo-hint mono dim" id="gb-photo-hint">max 5MB</span>
               <img id="gb-photo-preview" class="gb-photo-preview" alt="" hidden />
             </div>
-
             <button type="submit" class="btn btn-primary btn-block" id="gb-submit">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              <span>Post Comment</span>
+              <span>Post comment</span>
             </button>
-            <p class="form-note mono" id="gb-note" role="status"></p>
+            <p class="gb-note mono" id="gb-note" role="status"></p>
           </form>
         </div>
 
-        <!-- list -->
         <div class="gb-list-wrap reveal">
           <div class="gb-list" id="gb-list" aria-live="polite"></div>
-          <button class="btn btn-ghost btn-block" id="gb-more" hidden>Load more comments</button>
+          <button class="btn btn-ghost btn-block" id="gb-more" hidden>Load more</button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- ===== audio ===== -->
+  <!-- background music -->
   <audio id="bg-music" class="bg-music" src="assets/audio/bg-music.mp3" loop preload="none"></audio>
-  <button id="music-toggle" class="music-toggle" aria-label="Toggle background music">
+  <button id="music-toggle" class="music-toggle" aria-label="Putar suara latar">
     <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
     <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M23 9l-6 6"/><path d="M17 9l6 6"/></svg>
   </button>
 
-  <!-- ===== footer ===== -->
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-left">
@@ -335,12 +282,11 @@
         <span class="status-file mono dim">vean.my.id</span>
       </div>
       <div class="footer-right mono dim">
-        <span>© <span id="year">2026</span> Vean — designed &amp; built by me</span>
+        <span>Designed by Vean</span>
       </div>
     </div>
   </footer>
 
-  <!-- ===== modal ===== -->
   <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-backdrop" data-modal-close></div>
     <div class="modal-wrap">
@@ -351,8 +297,7 @@
     </div>
   </div>
 
-  <script src="lanyard.js"></script>
-  <script src="badge.js"></script>
+  <script type="module" src="card3d.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
