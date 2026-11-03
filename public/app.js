@@ -2,7 +2,6 @@
 
 /* ============================================================
    DATA — EDIT DI SINI
-   Ganti proyek, deskripsi, stack, role sesuai asli.
    ============================================================ */
 
 const ROLES = [
@@ -12,9 +11,6 @@ const ROLES = [
   "System Builder",
 ];
 
-// Proyek showcase — hasil kerjaan asli, bukan repo GitHub.
-// Tambah proyek baru: copy satu blok { } di bawah, isi title/url/domain/shot/tech/desc/tags.
-// `shot` = path screenshot di public/shots/ (jpg 1280x720).
 const PROJECTS = [
   { title: "Vean Uploader", tech: "JavaScript", url: "https://uploader.vean.my.id",
     domain: "uploader.vean.my.id", shot: "shots/uploader.jpg",
@@ -52,13 +48,37 @@ const STACK = [
 const PROJECTS_VISIBLE = 6;
 
 /* ============================================================
-   Helpers
+   Environment flags + helpers
    ============================================================ */
+const mq = (q) => window.matchMedia(q);
+const prefersReduced = mq("(prefers-reduced-motion: reduce)").matches;
+const canHover = mq("(hover: hover) and (pointer: fine)").matches;
+
 const $ = (s, el) => (el || document).querySelector(s);
 const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+/* One rAF-throttled scroll channel: every scroll consumer subscribes here
+   instead of each adding its own listener and forcing its own layout read. */
+const scrollSubs = new Set();
+let scrollQueued = false;
+function onScrollFrame(fn) {
+  scrollSubs.add(fn);
+  return () => scrollSubs.delete(fn);
+}
+function runScrollSubs() {
+  scrollQueued = false;
+  for (const fn of scrollSubs) fn();
+}
+window.addEventListener("scroll", () => {
+  if (scrollQueued) return;
+  scrollQueued = true;
+  requestAnimationFrame(runScrollSubs);
+}, { passive: true });
+
 /* ============================================================
-   Preloader (boot terminal)
+   Boot sequence
    ============================================================ */
 const BOOT_LINES = [
   { t: "> booting vean.my.id", cls: "cmd" },
@@ -75,12 +95,13 @@ function runBoot() {
   const linesEl = $("#boot-lines");
   const barEl = $("#boot-bar-fill");
   const statusEl = $("#boot-status");
-  if (!linesEl) return finishBoot();
+  if (!linesEl || !barEl || !statusEl) return finishBoot();
 
   const total = BOOT_LINES.length;
   let i = 0;
+
   const step = () => {
-    if (i >= total) { setTimeout(finishBoot, 260); return; }
+    if (i >= total) { setTimeout(finishBoot, 240); return; }
     const ln = BOOT_LINES[i];
     const el = document.createElement("div");
     el.className = ln.cls;
@@ -90,16 +111,17 @@ function runBoot() {
     const pct = Math.round((i / total) * 100);
     barEl.style.width = pct + "%";
     statusEl.textContent = pct + "%";
-    setTimeout(step, 150 + Math.random() * 120);
+    setTimeout(step, prefersReduced ? 30 : 130 + Math.random() * 110);
   };
   step();
 }
 
 function finishBoot() {
-  $("#preloader").classList.add("done");
-  // hero entrance (staggered)
+  const pre = $("#preloader");
+  if (pre) pre.classList.add("done");
+
   $$(".hero-anim").forEach((el, i) => {
-    el.style.transitionDelay = i * 90 + "ms";
+    el.style.setProperty("--rv-d", i * 80 + "ms");
     requestAnimationFrame(() => el.classList.add("visible"));
   });
   typeRole();
@@ -107,45 +129,50 @@ function finishBoot() {
 }
 
 /* ============================================================
-   Typing role
+   Hero role typewriter
    ============================================================ */
 function typeRole() {
   const el = $("#type-role");
   if (!el) return;
+  if (prefersReduced) { el.textContent = ROLES[0]; return; }
+
   let ri = 0, ci = 0, deleting = false;
   const tick = () => {
     const word = ROLES[ri];
     ci += deleting ? -1 : 1;
     el.textContent = word.slice(0, ci);
-    let delay = deleting ? 38 : 70;
-    if (!deleting && ci === word.length) { delay = 1700; deleting = true; }
-    else if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % ROLES.length; delay = 350; }
+    let delay = deleting ? 34 : 62;
+    if (!deleting && ci === word.length) { delay = 1800; deleting = true; }
+    else if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % ROLES.length; delay = 340; }
+    // pause the loop while the hero is off-screen
+    if (document.hidden) { setTimeout(tick, 400); return; }
     setTimeout(tick, delay);
   };
   tick();
 }
 
 /* ============================================================
-   Custom cursor
+   Custom cursor (spring trail)
    ============================================================ */
 function customCursor() {
   const dot = $("#cursor-dot");
   const ring = $("#cursor-ring");
   if (!dot || !ring) return;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  if (!canHover || prefersReduced) return;
 
   document.body.classList.add("has-cursor");
   dot.style.opacity = "1";
   ring.style.opacity = "1";
 
   let mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0;
+  let idle = 0;
 
   window.addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
     dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
-  });
+    idle = 0;
+  }, { passive: true });
 
-  // spring-physics trailing ring (smoother than linear lerp)
   (function loop() {
     vx += (mx - rx) * 0.16;
     vy += (my - ry) * 0.16;
@@ -154,122 +181,192 @@ function customCursor() {
     rx += vx;
     ry += vy;
     ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-    requestAnimationFrame(loop);
+    // park the loop once the ring has settled; mousemove wakes it again
+    if (Math.abs(vx) + Math.abs(vy) > 0.01 || Math.abs(mx - rx) + Math.abs(my - ry) > 0.1) {
+      idle = 0;
+      requestAnimationFrame(loop);
+    } else if (++idle < 30) {
+      requestAnimationFrame(loop);
+    } else {
+      const wake = () => { idle = 0; requestAnimationFrame(loop); window.removeEventListener("mousemove", wake); };
+      window.addEventListener("mousemove", wake, { passive: true, once: true });
+    }
   })();
 
-  // click pulse
   window.addEventListener("mousedown", () => ring.classList.add("down"));
   window.addEventListener("mouseup", () => ring.classList.remove("down"));
 
-  // hover grow — delegated, works for dynamic (modal) elements too
-  const hoverables = "a, button, .card, .btn, .compose input, .compose textarea, [data-modal-close]";
+  const hoverables = "a, button, .card, .btn, .compose input, .compose textarea, .gb-field input, .gb-field textarea, [data-modal-close]";
   document.addEventListener("mouseover", (e) => {
+    if (!e.target.closest) return;
     ring.classList.toggle("active", !!e.target.closest(hoverables));
   });
 }
 
+/* ============================================================
+   Scroll progress — scaleX, no layout thrash
+   ============================================================ */
 function scrollProgress() {
   const bar = $("#scroll-progress");
   if (!bar) return;
+  let last = -1;
   const update = () => {
     const h = document.documentElement;
     const max = h.scrollHeight - h.clientHeight;
-    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+    const p = max > 0 ? clamp(h.scrollTop / max, 0, 1) : 0;
+    if (Math.abs(p - last) < 0.0005) return;
+    last = p;
+    bar.style.transform = `scaleX(${p})`;
   };
-  window.addEventListener("scroll", update, { passive: true });
+  onScrollFrame(update);
+  window.addEventListener("resize", update);
   update();
 }
 
+/* ============================================================
+   Magnetic buttons — offsets live in --tx/--ty so CSS owns transform
+   ============================================================ */
 function magnetic() {
-  if (!window.matchMedia("(hover: hover)").matches) return;
+  if (!canHover || prefersReduced) return;
   $$(".btn").forEach((btn) => {
+    if (btn.classList.contains("btn-block")) return;
+    let queued = false;
+    let tx = 0, ty = 0;
+
+    const apply = () => {
+      queued = false;
+      btn.style.setProperty("--tx", tx.toFixed(2) + "px");
+      btn.style.setProperty("--ty", ty.toFixed(2) + "px");
+    };
+
     btn.addEventListener("mousemove", (e) => {
       const r = btn.getBoundingClientRect();
-      const x = e.clientX - r.left - r.width / 2;
-      const y = e.clientY - r.top - r.height / 2;
-      btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px)`;
-    });
+      tx = (e.clientX - r.left - r.width / 2) * 0.14;
+      ty = (e.clientY - r.top - r.height / 2) * 0.2;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(apply);
+    }, { passive: true });
+
     btn.addEventListener("mouseleave", () => {
-      btn.style.transform = "";
+      tx = 0; ty = 0;
+      if (!queued) { queued = true; requestAnimationFrame(apply); }
     });
   });
 }
 
 /* ============================================================
-   Nav
+   Nav — scroll state, active section, sliding indicator
    ============================================================ */
 function nav() {
   const navEl = $("#nav");
   const links = $$(".nav-link");
+  const ind = $("#nav-ind");
   const burger = $("#nav-burger");
   const linksWrap = $("#nav-links");
   const sections = $$("section[id]");
+  if (!navEl) return;
 
-  const onScroll = () => {
+  const wide = () => mq("(min-width: 861px)").matches;
+
+  function moveIndicator(active) {
+    if (!ind) return;
+    if (!wide() || !active) { ind.classList.remove("on"); return; }
+    ind.style.left = active.offsetLeft + "px";
+    ind.style.width = active.offsetWidth + "px";
+    ind.classList.add("on");
+  }
+
+  let current = "";
+  const onFrame = () => {
     navEl.classList.toggle("scrolled", window.scrollY > 24);
-    let current = sections[0] && sections[0].id;
+    let active = sections[0] && sections[0].id;
     for (const s of sections) {
-      if (window.scrollY >= s.offsetTop - 160) current = s.id;
+      if (window.scrollY >= s.offsetTop - 160) active = s.id;
     }
-    links.forEach((l) => l.classList.toggle("active", l.getAttribute("href") === "#" + current));
+    if (active === current) return;
+    current = active;
+    let activeEl = null;
+    links.forEach((l) => {
+      const on = l.getAttribute("href") === "#" + active;
+      l.classList.toggle("active", on);
+      if (on) activeEl = l;
+    });
+    moveIndicator(activeEl);
   };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  onScrollFrame(onFrame);
+  window.addEventListener("resize", () => moveIndicator($(".nav-link.active")));
+  onFrame();
 
-  burger.addEventListener("click", () => {
-    const open = linksWrap.classList.toggle("open");
-    burger.classList.toggle("open", open);
-    burger.setAttribute("aria-expanded", open);
-  });
-  $$(".nav-link").forEach((l) => {
-    l.addEventListener("click", () => {
+  if (burger && linksWrap) {
+    burger.addEventListener("click", () => {
+      const open = linksWrap.classList.toggle("open");
+      burger.classList.toggle("open", open);
+      burger.setAttribute("aria-expanded", String(open));
+    });
+    links.forEach((l) => l.addEventListener("click", () => {
       linksWrap.classList.remove("open");
       burger.classList.remove("open");
       burger.setAttribute("aria-expanded", "false");
+    }));
+    // Escape closes the drawer
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && linksWrap.classList.contains("open")) {
+        linksWrap.classList.remove("open");
+        burger.classList.remove("open");
+        burger.setAttribute("aria-expanded", "false");
+        burger.focus();
+      }
     });
-  });
+  }
 }
 
 /* ============================================================
-   Reveal (IntersectionObserver) + counters
+   Reveal observer + counters
    ============================================================ */
 let revealObserver;
 
 function makeObserver() {
   revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
       const el = e.target;
       el.classList.add("visible");
-      if (el.style.transitionDelay) {
-        setTimeout(() => { el.style.transitionDelay = ""; }, 1100);
-      }
-      const num = el.querySelector("[data-count]");
-      if (num) countUp(num);
+      el.querySelectorAll("[data-count]").forEach(countUp);
       revealObserver.unobserve(el);
-    });
+
+      // The stagger delay must not outlive the entrance, or every later
+      // transition on the same element (hover lift, border) inherits it.
+      const delay = parseFloat(getComputedStyle(el).transitionDelay) || 0;
+      if (delay > 0) {
+        setTimeout(() => el.style.setProperty("--rv-d", "0ms"), delay * 1000 + 800);
+      }
+    }
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
 }
 
 function observeReveals() {
+  if (!revealObserver) makeObserver();
   $$(".reveal:not(.visible)").forEach((el) => revealObserver.observe(el));
 }
 
 function countUp(el) {
+  if (el.dataset.done === "1") return;
+  el.dataset.done = "1";
   const target = parseInt(el.dataset.count, 10) || 0;
+  if (prefersReduced) { el.textContent = String(target); return; }
   const dur = 1400;
   const t0 = performance.now();
   const frame = (t) => {
-    const p = Math.min((t - t0) / dur, 1);
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(target * eased);
+    const p = clamp((t - t0) / dur, 0, 1);
+    el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
     if (p < 1) requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
 }
 
 /* ============================================================
-   Showcase render
+   Showcase
    ============================================================ */
 function renderShowcase() {
   const grid = $("#showcase-grid");
@@ -277,20 +374,23 @@ function renderShowcase() {
   if (!grid) return;
 
   let shown = PROJECTS_VISIBLE;
+
   const render = () => {
     grid.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
     PROJECTS.slice(0, shown).forEach((p, i) => {
       const card = document.createElement("article");
       card.className = "card reveal";
-      card.dataset.idx = i;
-      card.style.transitionDelay = (i % 3) * 90 + "ms";
+      card.dataset.idx = String(i);
+      card.style.setProperty("--rv-d", (i % 3) * 90 + "ms");
       card.innerHTML = `
         <div class="card-preview">
           <div class="preview-bar">
             <span class="pdot r"></span><span class="pdot y"></span><span class="pdot g"></span>
             <span class="preview-url mono">${p.domain}</span>
           </div>
-          <div class="preview-shot"><img src="${p.shot}" alt="${p.title} preview" loading="lazy" /></div>
+          <div class="preview-shot"><img src="${p.shot}" alt="${p.title} preview" loading="lazy" decoding="async" /></div>
         </div>
         <div class="card-body">
           <div class="card-top">
@@ -302,37 +402,53 @@ function renderShowcase() {
           <div class="card-tags">${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
           <a class="card-link" href="${p.url}" target="_blank" rel="noopener">
             Visit Project
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
           </a>
         </div>`;
-      grid.appendChild(card);
+
+      if (canHover && !prefersReduced) {
+        card.addEventListener("pointermove", (e) => {
+          const r = card.getBoundingClientRect();
+          const px = clamp((e.clientX - r.left) / r.width, 0, 1);
+          const py = clamp((e.clientY - r.top) / r.height, 0, 1);
+          card.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
+          card.style.setProperty("--my", (py * 100).toFixed(1) + "%");
+        }, { passive: true });
+      }
+
+      frag.appendChild(card);
     });
+
+    grid.appendChild(frag);
+
     const remaining = PROJECTS.length - shown;
-    if (remaining > 0) {
-      moreBtn.hidden = false;
-      moreBtn.textContent = "Load Additional Projects (" + remaining + " more)";
-    } else {
-      moreBtn.hidden = true;
+    if (moreBtn) {
+      moreBtn.hidden = remaining <= 0;
+      if (remaining > 0) moreBtn.textContent = `Load Additional Projects (${remaining} more)`;
     }
     observeReveals();
   };
 
-  moreBtn.addEventListener("click", () => { shown = Math.min(shown + 6, PROJECTS.length); render(); });
+  if (moreBtn) {
+    moreBtn.addEventListener("click", () => {
+      shown = Math.min(shown + 6, PROJECTS.length);
+      render();
+    });
+  }
   render();
 
-  // sync hero counter dengan jumlah project sebenarnya
   const counter = $("#live-projects-count");
-  if (counter) counter.setAttribute("data-count", PROJECTS.length);
+  if (counter) counter.setAttribute("data-count", String(PROJECTS.length));
 }
 
 /* ============================================================
-   Stack render
+   Stack
    ============================================================ */
 function renderStack() {
   const grid = $("#stack-grid");
   if (!grid) return;
   grid.innerHTML = STACK.map((s, i) => `
-    <div class="stack-card reveal" style="transition-delay: ${i * 90}ms">
+    <div class="stack-card reveal" style="--rv-d:${i * 80}ms">
       <h3>${s.name}</h3>
       <ul>${s.items.map((it) => `<li>${it}</li>`).join("")}</ul>
     </div>`).join("");
@@ -340,34 +456,45 @@ function renderStack() {
 }
 
 /* ============================================================
-   Init
+   Smooth anchor scrolling
    ============================================================ */
 function smoothScroll() {
-  $$("[data-scroll]").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      const href = el.getAttribute("href");
-      if (!href || href.charAt(0) !== "#") return;
-      const target = document.querySelector(href);
-      if (!target) return;
-      e.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      history.replaceState(null, "", href);
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest && e.target.closest("[data-scroll]");
+    if (!el) return;
+    const href = el.getAttribute("href");
+    if (!href || href.charAt(0) !== "#") return;
+    const target = document.querySelector(href);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({
+      behavior: prefersReduced ? "auto" : "smooth",
+      block: "start",
     });
+    // keep the URL shareable without adding a history entry per click
+    history.replaceState(null, "", href);
+    // move keyboard focus with the viewport, or the next Tab jumps back up
+    target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
   });
 }
 
+/* ============================================================
+   Contact form
+   ============================================================ */
 function contactForm() {
   const form = $("#compose-form");
   const note = $("#compose-note");
-  if (!form) return;
+  if (!form || !note) return;
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = $("#compose-send");
-    const orig = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "Sending...";
+    const orig = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = "Sending..."; }
     note.textContent = "";
     note.style.color = "";
+
     try {
       const body = new URLSearchParams(new FormData(form)).toString();
       const res = await fetch("/", {
@@ -379,29 +506,41 @@ function contactForm() {
       note.textContent = "> Message sent — I'll get back to you shortly.";
       form.reset();
     } catch (err) {
-      note.style.color = "#ff7b7b";
+      note.style.color = "var(--danger)";
       note.textContent = "> Something went wrong. Please try again, or email me directly at admin@vean.my.id.";
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = orig; }
     }
-    btn.disabled = false;
-    btn.textContent = orig;
   });
 }
 
 /* ============================================================
-   Modal / lightbox
+   Modal / lightbox — focus trap + restore
    ============================================================ */
+let lastFocused = null;
+
+function focusables(root) {
+  return $$('a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select, [tabindex]:not([tabindex="-1"])', root)
+    .filter((el) => el.offsetParent !== null);
+}
+
 function openModal(html) {
   const modal = $("#modal");
   const panel = $("#modal-panel");
   if (!modal || !panel) return;
+
+  lastFocused = document.activeElement;
   panel.innerHTML = html;
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-  // cursor ring hover on injected interactive elements
+
+  const close = $(".modal-close", modal);
+  if (close) close.focus();
+
   const ring = $("#cursor-ring");
   if (ring) {
-    panel.querySelectorAll("a, button").forEach((el) => {
+    $$("a, button", panel).forEach((el) => {
       el.addEventListener("mouseenter", () => ring.classList.add("active"));
       el.addEventListener("mouseleave", () => ring.classList.remove("active"));
     });
@@ -410,13 +549,16 @@ function openModal(html) {
 
 function closeModal() {
   const modal = $("#modal");
-  if (!modal) return;
+  if (!modal || !modal.classList.contains("open")) return;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
+  if (lastFocused && document.contains(lastFocused)) lastFocused.focus({ preventScroll: true });
+  lastFocused = null;
 }
 
 function openProjectModal(p) {
+  if (!p) return;
   openModal(`
     <div class="modal-project">
       <div class="modal-shot"><img src="${p.shot}" alt="${p.title}" /></div>
@@ -439,32 +581,42 @@ function initModal() {
   $$("[data-modal-close]").forEach((el) => el.addEventListener("click", closeModal));
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+    if (!modal.classList.contains("open")) return;
+
+    if (e.key === "Escape") { e.preventDefault(); closeModal(); return; }
+
+    if (e.key === "Tab") {
+      const list = focusables(modal);
+      if (!list.length) return;
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
 
-  // profile photo lightbox — the hero is a WebGL card now, so the modal target
-  // is the stage itself; card3d.js owns drag/flip on the same element.
-  const photo = $("#card3d-stage");
-  if (photo) {
-    const activate = () => openModal(`
-      <div class="modal-photo">
-        <img src="me.jpg" alt="Vean" />
-        <div class="modal-meta">
-          <span class="modal-title">Vean</span>
-          <span class="mono dim">Full-Stack Developer · Security Researcher</span>
-        </div>
-      </div>`);
-    // only the keyboard path opens the lightbox; pointer input belongs to the card
-    photo.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { e.preventDefault(); activate(); }
+  // The hero is a WebGL card: pointer input belongs to card3d (drag/flip),
+  // so only Enter opens the lightbox. Space is the flip key, handled there.
+  const stage = $("#card3d-stage");
+  if (stage) {
+    stage.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      openModal(`
+        <div class="modal-photo">
+          <img src="me.jpg" alt="Vean" />
+          <div class="modal-meta">
+            <span class="modal-title">Vean</span>
+            <span class="mono dim">Full-Stack Developer · Security Researcher</span>
+          </div>
+        </div>`);
     });
   }
 
-  // project card lightbox (delegation)
   const grid = $("#showcase-grid");
   if (grid) {
     grid.addEventListener("click", (e) => {
-      if (e.target.closest(".card-link")) return; // let the link open the site
+      if (e.target.closest(".card-link")) return;
       const card = e.target.closest(".card");
       if (!card || card.dataset.idx == null) return;
       openProjectModal(PROJECTS[+card.dataset.idx]);
@@ -472,40 +624,47 @@ function initModal() {
   }
 }
 
-/* ===== Music toggle + ring loop ===== */
+/* ============================================================
+   Background music
+   ============================================================ */
 let musicAudio = null;
 let musicPlaying = false;
 
 function setRingActive(on) {
-  const frame = document.querySelector('.card3d-stage');
-  if (frame) frame.classList.toggle('music-on', on);
+  const frame = $(".card3d-stage");
+  if (frame) frame.classList.toggle("music-on", on);
 }
 
 function initMusic() {
-  musicAudio = $('#bg-music');
-  const toggle = $('#music-toggle');
+  musicAudio = $("#bg-music");
+  const toggle = $("#music-toggle");
   if (!musicAudio || !toggle) return;
 
-  document.body.classList.add('has-music');
+  document.body.classList.add("has-music");
 
-  function updateUI() {
-    toggle.classList.toggle('paused', !musicPlaying);
-  }
+  const updateUI = () => {
+    toggle.classList.toggle("paused", !musicPlaying);
+    toggle.setAttribute("aria-pressed", String(musicPlaying));
+  };
 
-  function tryPlay() {
-    musicAudio.play().then(() => {
+  const tryPlay = () => {
+    const p = musicAudio.play();
+    if (!p || !p.then) { musicPlaying = true; setRingActive(true); updateUI(); return; }
+    p.then(() => {
       musicPlaying = true;
       setRingActive(true);
       updateUI();
-    }).catch((e) => {
-      console.warn('Music autoplay failed:', e);
+    }).catch(() => {
+      // autoplay blocked: leave the button in the paused state, no console noise
+      musicPlaying = false;
+      setRingActive(false);
       updateUI();
     });
-  }
+  };
 
   tryPlay();
 
-  toggle.addEventListener('click', () => {
+  toggle.addEventListener("click", () => {
     if (!musicPlaying) {
       tryPlay();
     } else {
@@ -517,30 +676,12 @@ function initMusic() {
   });
 }
 
-function init() {
-  // hide hero behind opaque preloader (avoid flash)
-  $$(".hero .eyebrow, .hero-title, .hero-name, .hero-role, .hero-desc, .hero-cta, .hero-photo").forEach((el) => el.classList.add("hero-anim"));
-
-  makeObserver();
-  renderShowcase();
-  renderStack();
-  customCursor();
-  scrollProgress();
-  magnetic();
-  nav();
-  smoothScroll();
-  contactForm();
-  initModal();
-  initMusic();
-  gbInit();
-  runBoot();
-}
-
 /* ============================================================
-   Guestbook — Netlify Function + Blobs, no external DB
+   Guestbook — Netlify Function + Blobs
    ============================================================ */
 const GB_ENDPOINT = "/.netlify/functions/guestbook";
 const GB_VISIBLE = 6;
+const GB_MAX_BYTES = 5 * 1024 * 1024; // matches the "max 5MB" label
 const gbState = { items: [], shown: GB_VISIBLE, busy: false };
 
 function escHtml(v) {
@@ -600,18 +741,21 @@ function gbRender() {
   const more = $("#gb-more");
   const count = $("#gb-count");
   if (!list) return;
+
   const items = gbState.items;
   if (count) count.textContent = String(items.length);
+
   if (!items.length) {
     list.innerHTML = '<p class="gb-empty">No comments yet. Be the first.</p>';
     if (more) more.hidden = true;
     return;
   }
+
   list.innerHTML = items.slice(0, gbState.shown).map(gbItemHTML).join("");
+
   if (more) {
     const left = items.length - gbState.shown;
     more.hidden = left <= 0;
-    // clamp: without this, a short list produced "Load -5 more"
     more.textContent = `Load ${Math.min(GB_VISIBLE, Math.max(0, left))} more`;
     more.onclick = () => { gbState.shown += GB_VISIBLE; gbRender(); };
   }
@@ -644,17 +788,17 @@ async function gbLoad() {
   }
 }
 
-/* shrink a picked photo before it travels: keeps the blob small */
+/* Shrink a picked photo before it travels: keeps the blob small. */
 function compressImage(file, maxSide, quality) {
   return new Promise((resolve, reject) => {
     if (!file) return resolve("");
-    if (!/^image\//.test(file.type)) return reject(new Error("not an image"));
-    if (file.size > 8 * 1024 * 1024) return reject(new Error("file is over 8MB"));
+    if (!/^image\//.test(file.type)) return reject(new Error("That file is not an image."));
+    if (file.size > GB_MAX_BYTES) return reject(new Error("File is larger than 5MB."));
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error("could not read the file"));
+    reader.onerror = () => reject(new Error("Could not read the file."));
     reader.onload = () => {
       const img = new Image();
-      img.onerror = () => reject(new Error("image is corrupt"));
+      img.onerror = () => reject(new Error("That image looks corrupt."));
       img.onload = () => {
         const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
         const cw = Math.max(1, Math.round(img.naturalWidth * scale));
@@ -675,6 +819,7 @@ function gbPhoto() {
   const prev = $("#gb-photo-preview");
   const hint = $("#gb-photo-hint");
   if (!input) return;
+
   input.addEventListener("change", async () => {
     const f = input.files && input.files[0];
     if (!f) {
@@ -707,6 +852,7 @@ function gbForm() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (gbState.busy) return;
+
     const name = (nameEl.value || "").trim();
     const text = (textEl.value || "").trim();
     if (name.length < 2) { gbNote("Name needs at least 2 characters.", "err"); nameEl.focus(); return; }
@@ -716,6 +862,7 @@ function gbForm() {
     const label = btn.innerHTML;
     btn.disabled = true;
     btn.textContent = "Sending...";
+
     try {
       const res = await fetch(GB_ENDPOINT, {
         method: "POST",
@@ -724,6 +871,7 @@ function gbForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "HTTP " + res.status);
+
       if (data.item) {
         gbState.items.unshift(data.item);
         gbState.shown = Math.max(gbState.shown, GB_VISIBLE);
@@ -731,6 +879,7 @@ function gbForm() {
       } else {
         gbLoad();
       }
+
       form.reset();
       const prev = $("#gb-photo-preview");
       if (prev) { prev.hidden = true; prev.removeAttribute("src"); }
@@ -755,4 +904,45 @@ function gbInit() {
   gbLoad();
 }
 
-document.addEventListener("DOMContentLoaded", init);
+/* ============================================================
+   Hero parallax — a few px of drift, rAF-driven, desktop only
+   ============================================================ */
+function heroParallax() {
+  if (prefersReduced || !canHover) return;
+  const stage = $(".hero-photo");
+  if (!stage) return;
+
+  let lastY = -1;
+  onScrollFrame(() => {
+    const y = window.scrollY;
+    if (y > window.innerHeight || Math.abs(y - lastY) < 1) return;
+    lastY = y;
+    stage.style.setProperty("--py", (y * 0.06).toFixed(2) + "px");
+  });
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+function init() {
+  makeObserver();
+  renderShowcase();
+  renderStack();
+  customCursor();
+  scrollProgress();
+  magnetic();
+  heroParallax();
+  nav();
+  smoothScroll();
+  contactForm();
+  initModal();
+  initMusic();
+  gbInit();
+  runBoot();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}

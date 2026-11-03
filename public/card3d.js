@@ -465,11 +465,12 @@ function boot() {
   }
 
   function atRest() {
+    // No `!pointerOn` here: a still pointer over the card leaves the springs
+    // converged, and including the hover flag pinned the loop at 60fps forever.
     return !dragging &&
       Math.abs(sRX.x - sRX.t) < 0.0004 && Math.abs(sRX.v) < 0.0004 &&
       Math.abs(sRY.x - sRY.t) < 0.0004 && Math.abs(sRY.v) < 0.0004 &&
-      Math.abs(sFlip.x - sFlip.t) < 0.0006 && Math.abs(sFlip.v) < 0.0006 &&
-      !pointerOn;
+      Math.abs(sFlip.x - sFlip.t) < 0.0006 && Math.abs(sFlip.v) < 0.0006;
   }
 
   /* ---------- pointer ---------- */
@@ -546,15 +547,34 @@ function boot() {
   stage.addEventListener("pointerup", release);
   stage.addEventListener("pointercancel", release);
 
+  // Space flips. Enter belongs to app.js (opens the photo lightbox), so this
+  // handler deliberately does not claim it.
   stage.addEventListener("keydown", (e) => {
-    if (e.key !== " " && e.key !== "Enter") return;
+    if (e.key !== " ") return;
     e.preventDefault();
     flipTarget += Math.PI;
     kick();
   });
 
   /* ---------- loop ---------- */
-  let raf = null, lastT = 0, t0 = performance.now();
+  // Two speeds: full rAF while something is actually moving, a slow timer while
+  // the card only breathes on its idle sine. Rendering a static card at 60fps
+  // burned a GPU core for nothing; parking it entirely killed the float.
+  let raf = null, idleTimer = null, lastT = 0, t0 = performance.now();
+  let onScreen = true;
+
+  const IDLE_MS = 55;          // ~18fps idle breath
+  const IDLE_AMP = 0.045;
+  const IDLE_AMP_REDUCED = 0;
+
+  function scheduleIdle() {
+    if (raf || idleTimer) return;
+    idleTimer = window.setTimeout(() => {
+      idleTimer = null;
+      if (!onScreen || document.hidden || reduce) return;
+      frame(performance.now());
+    }, IDLE_MS);
+  }
 
   function frame(now) {
     raf = null;
@@ -562,7 +582,7 @@ function boot() {
     let dt = (now - lastT) / 1000;
     lastT = now;
     if (!(dt > 0)) dt = 1 / 60;
-    if (dt > 1 / 30) dt = 1 / 30;
+    if (dt > 1 / 20) dt = 1 / 20;   // a parked loop resumes with a big dt; clamp it
 
     step(sRX, dt);
     step(sRY, dt);
@@ -572,8 +592,8 @@ function boot() {
     sFlip.t = flipTarget;
     if (!dragging) step(sFlip, dt, 52, 10.4);   // slower + soft overshoot reads as weight
 
-    const idle = reduce ? 0 : Math.sin((now - t0) * 0.00068);
-    card.position.y = idle * 0.045;
+    const idle = reduce ? 0 : Math.sin((now - t0) * 0.00068) * IDLE_AMP;
+    card.position.y = idle;
     card.rotation.x = sRX.x;
     card.rotation.y = sRY.x + (dragging ? spin : sFlip.x);
     card.rotation.z = reduce ? 0 : Math.sin((now - t0) * 0.00051 + 1.1) * 0.014;
@@ -583,14 +603,35 @@ function boot() {
     rim.position.y = -2.2 + sRX.x * 5;
 
     renderer.render(scene, camera);
-    if (!atRest()) kick();
+
+    if (atRest()) scheduleIdle();
+    else kick();
   }
 
   function kick() {
     if (raf) return;
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
     lastT = 0;
     raf = requestAnimationFrame(frame);
   }
+
+  // Stop rendering while the hero is scrolled away or the tab is hidden.
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        onScreen = e.isIntersecting;
+        if (onScreen) kick();
+        else if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      }
+    }, { rootMargin: "120px" }).observe(stage);
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    } else {
+      kick();
+    }
+  });
 
   /* ---------- sizing ---------- */
   function resize() {
