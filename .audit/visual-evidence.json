@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "uizze.visual-evidence.v1",
+  "scope": "Vean portfolio: hero, showcase, stack, about, contact, guestbook at 1440x900; radius-scale normalization and will-change layer scoping",
+  "platform": "web",
+  "sources": [
+    { "path": "../public/style.css", "sha256": "52aa031901d8adffa051222b9dae4863aa6e2a97ddd1070b3388dd6aa0a2313d" },
+    { "path": "../public/app.js", "sha256": "b18abcc0b872bf554ca8d3d0bbeb7d6c985412e46e76f5521b7ec2fcf5b62f9b" },
+    { "path": "../public/index.html", "sha256": "3f377f1cd54a330d1dc6bafc6a1ae7ae54cfc7693f33413d887b7153510574a9" },
+    { "path": "../public/card3d.js", "sha256": "893c4db002754a8d8ba78e77fc1963feb6a6a33b69ebd13f83f8e2b2c9ef9a50" }
+  ],
+  "comparison": "existing-system",
+  "requiredChecks": [
+    { "id": "desktop-hero", "kind": "visual" },
+    { "id": "radius-scale", "kind": "visual" },
+    { "id": "focus-ring-rule", "kind": "visual" },
+    { "id": "layer-scoping", "kind": "visual" },
+    { "id": "motion-idle-card", "kind": "motion" }
+  ],
+  "checks": [
+    {
+      "id": "desktop-hero",
+      "status": "pass",
+      "state": "Preloader finished, hero entrance settled, fonts and me.jpg loaded",
+      "environment": { "kind": "browser", "name": "ZCode In-app Browser (Chromium)", "width": 1440, "height": 900 },
+      "observed": "Hero renders with card3d canvas at .ready, 6 project cards, 4 stack cards, 0 horizontal overflow (scrollWidth - clientWidth = 0).",
+      "artifacts": [{ "path": "captures/desktop-hero.png", "kind": "image", "sha256": "8236f6ed4fb159462ac36ea73cb96b53d22487ac00b58b67d099cb63e98903a1" }]
+    },
+    {
+      "id": "radius-scale",
+      "status": "pass",
+      "state": "All elements with a non-zero border radius",
+      "environment": { "kind": "browser", "name": "ZCode In-app Browser (Chromium)", "width": 1440, "height": 900 },
+      "observed": "Rendered radii collapse to one scale: 4, 6, 8, 12, 16, 18px plus 50% circles and 999px pills. Before normalization there were 12 unrelated literals (2,4,5,6,8,9,10,14,22...). Verified button 8px, card 16px, input 8px, guestbook panel 12px.",
+      "artifacts": [{ "path": "captures/desktop-hero.png", "kind": "image", "sha256": "8236f6ed4fb159462ac36ea73cb96b53d22487ac00b58b67d099cb63e98903a1" }]
+    },
+    {
+      "id": "focus-ring-rule",
+      "status": "pass",
+      "state": "Keyboard focus target",
+      "environment": { "kind": "browser", "name": "ZCode In-app Browser (Chromium)", "width": 1440, "height": 900 },
+      "observed": "Stylesheet contains :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px } and the engine supports selector(:focus-visible). Live Tab traversal could not be exercised in this tab, so the rendered ring is rule-verified, not click-verified.",
+      "artifacts": [{ "path": "captures/desktop-hero.png", "kind": "image", "sha256": "8236f6ed4fb159462ac36ea73cb96b53d22487ac00b58b67d099cb63e98903a1" }]
+    },
+    {
+      "id": "layer-scoping",
+      "status": "pass",
+      "state": "Showcase cards before and after the reveal entrance",
+      "environment": { "kind": "browser", "name": "ZCode In-app Browser (Chromium)", "width": 1440, "height": 900 },
+      "observed": "Before reveal: 6 cards report will-change transform (needed for the entrance). After .visible: 0 of 6 remain promoted. The previous rule pinned ~5.2 MPx of GPU backing store permanently for a one-shot animation.",
+      "artifacts": [{ "path": "captures/desktop-hero.png", "kind": "image", "sha256": "8236f6ed4fb159462ac36ea73cb96b53d22487ac00b58b67d099cb63e98903a1" }]
+    },
+    {
+      "id": "motion-idle-card",
+      "status": "blocked",
+      "state": "Hero card idle float and spring settle",
+      "environment": { "kind": "browser", "name": "ZCode In-app Browser (Chromium)", "width": 1440, "height": 900 },
+      "steps": ["scroll to hero", "wait for springs to settle", "sample card rotation over 13s"],
+      "observed": "Blocked: this tab reports document.hidden === true and the renderer is throttled. requestAnimationFrame produced 0 frames in 400-600ms and IntersectionObserver delivered 0 callbacks, so no idle motion can be observed. No video was captured. Card parking logic is source-reviewed only (scheduleIdle + IntersectionObserver + visibilitychange).",
+      "artifacts": []
+    }
+  ],
+  "unresolved": [
+    "Idle float, spring settle and scroll-smooth animation are unverified at runtime; the browser tab used for the audit has rAF and IntersectionObserver throttled to zero.",
+    "Keyboard focus ring was verified from the stylesheet rule, not by Tab traversal, because synthesized keypresses did not move focus in this tab.",
+    "No device or emulated-touch run was performed; touch drag on the 3D card is unverified."
+  ]
+}
