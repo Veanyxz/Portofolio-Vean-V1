@@ -36,6 +36,10 @@
   --font-body: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
+  /* the scrolled nav is 63px tall; anchor offsets must match it or the section
+     behind the gap shows through. One token so the two cannot drift apart. */
+  --nav-h: 64px;
+
   /* motion: one easing family, three weights */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -490,7 +494,7 @@ body.has-music .music-toggle { opacity: 0.7; transform: none; }
 }
 
 /* ===== Sections ===== */
-.section { padding: 110px clamp(20px, 6vw, 60px); scroll-margin-top: 92px; }
+.section { padding: 110px clamp(20px, 6vw, 60px); scroll-margin-top: var(--nav-h); }
 .section-head { max-width: 760px; margin-bottom: 56px; }
 .section-head h2, .contact h2 {
   font-family: var(--font-head); font-weight: 600;
@@ -784,7 +788,15 @@ body.has-music .music-toggle { opacity: 0.7; transform: none; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ===== Guestbook ===== */
-.guestbook { padding-top: 0; }
+/* Guestbook is the last section in <main> and shorter than the viewport, so the
+   document ran out of scroll before it could bring the section top under the
+   nav: clicking "Guestbook" stopped 126px short and Contact still filled the
+   screen. Reserving a viewport of room lets scrollIntoView honour
+   scroll-margin-top. */
+.guestbook {
+  padding-top: 0;
+  min-height: calc(100vh - var(--nav-h));
+}
 .gb-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 22px; align-items: start; }
 .gb-form-panel, .gb-list-wrap {
   background: var(--surface); border: 1px solid var(--border);
