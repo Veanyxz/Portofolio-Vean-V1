@@ -32,10 +32,10 @@ const PROJECTS = [
     domain: "retail.vean.my.id", shot: "shots/retail.jpg",
     desc: "A full retail point-of-sale and back-office suite for Indonesian shops: touchscreen POS with barcode scan and retail/grosir/reseller pricing, multi-branch inventory, purchase orders and payables, receivables, promotions, vouchers, bundling, cash & bank, double-entry accounting, shift and attendance tracking, plus role-gated access for admin, supervisor, cashier and warehouse.",
     tags: ["pos", "erp", "multi-branch", "accounting"] },
-  { title: "DigiPasar", tech: "JavaScript", url: "https://market.vean.my.id",
-    domain: "market.vean.my.id", shot: "shots/digipasar.jpg",
-    desc: "An Indonesian digital-goods marketplace: game top-ups, pulsa, e-money, streaming vouchers and software licenses, delivered automatically to the buyer's email in under a minute. Full storefront with catalog browsing, search, cart, ID/EN localization, and secure checkout.",
-    tags: ["marketplace", "digital goods", "e-commerce"] },
+  { title: "Ve Store", tech: "JavaScript", url: "https://market.vean.my.id",
+    domain: "market.vean.my.id", shot: "shots/ve-store.jpg",
+    desc: "A multi-vendor digital-goods marketplace: seller storefronts with stock upload, instant delivery to the buyer, rekber escrow on every transaction, a Want to Buy board, wallet payouts, plus a seller API with webhooks and an affiliate program. Catalog browsing, search, cart, and ID/EN localization.",
+    tags: ["marketplace", "multi-vendor", "escrow"] },
 ];
 
 const STACK = [
