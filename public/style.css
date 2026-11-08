@@ -233,11 +233,19 @@ body.has-music .music-toggle { opacity: 0.7; transform: none; }
   border-bottom: 1px solid transparent;
 }
 .nav.scrolled {
+  border-bottom: 1px solid var(--border);
+  padding: 12px clamp(20px, 5vw, 48px);
+}
+/* backdrop blur lives on a pseudo-element, not the nav itself: an element with
+   backdrop-filter becomes the containing block for position:fixed descendants,
+   which collapsed the mobile drawer (fixed, top:0 bottom:0) to nav height and
+   left everything below it transparent */
+.nav.scrolled::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
   background: rgba(5, 8, 7, 0.82);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border-bottom: 1px solid var(--border);
-  padding: 12px clamp(20px, 5vw, 48px);
 }
 .nav-logo {
   display: flex; align-items: center; gap: 10px;
